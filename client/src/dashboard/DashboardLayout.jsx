@@ -5,7 +5,6 @@ import { Outlet } from "react-router-dom";
 import DashboardNavbar from "./components/DashboardNavbar";
 import DashboardSidebar from "./components/DashboardSidebar";
 import MobileSidebar from "./components/MobileSidebar";
-import DashboardCards from "./components/DashboardCards";
 import DashboardLayoutSkeleton from "../components/DashboardLayoutSkeleton";
 
 
@@ -32,7 +31,6 @@ const DashboardLayout = () => {
         <DashboardSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
         <main className="flex-1 p-6 space-y-6">
-          <DashboardCards />
           <Outlet />
         </main>
       </div>

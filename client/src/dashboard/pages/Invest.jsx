@@ -1,46 +1,78 @@
-// dashboard/pages/Invest.jsx
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import api from "../../api/axios";
+import { useQuery } from "@tanstack/react-query";
 
-const wallets = {
-  btc: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-  eth: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-};
+//to be fetched from backend
+// const wallets = {
+//   btc: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+//   eth: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+// };
 
 const plans = [
-  { id: 1, name: "Starter Plan", min: 1000, roi: "15%" },
-  { id: 2, name: "Premium Plan", min: 5000, roi: "25%" },
-  { id: 3, name: "Pro Plan", min: 10000, roi: "40%" },
+  { id: 1, name: "Starter Plan", min: 100, roi: "20%" },
+  { id: 2, name: "Premium Plan", min: 1000, roi: "35%" },
+  { id: 3, name: "Pro Plan", min: 10000, roi: "50%" },
 ];
 
 const Invest = () => {
   const [coin, setCoin] = useState("btc");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [amount, setAmount] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    if (!selectedPlan) {
-      alert("Please select a plan!");
-      return;
+  const { data: wallets, isLoading } = useQuery({
+    queryKey: ["adminWallets"],
+    queryFn: () => api.get("/admin-wallets").then((res) => res.data),
+    staleTime: Infinity, // These rarely change, so keep them in cache forever
+  });
+
+  // Step 1: Validate and show the summary
+  const handleReview = () => {
+    if (!selectedPlan) return alert("Please select a plan!");
+    if (Number(amount) < selectedPlan.min) {
+      return alert(`Minimum for ${selectedPlan.name} is $${selectedPlan.min}`);
     }
+    setIsModalOpen(true);
+  };
 
-    if (amount < selectedPlan.min) {
-      alert(`Minimum for ${selectedPlan.name} is $${selectedPlan.min}`);
-      return;
+  // Step 2: The actual API call
+  const confirmInvestment = async () => {
+    setIsSubmitting(true);
+
+    const numAmount = Number(amount);
+    const roiDecimal = parseFloat(selectedPlan.roi) / 100;
+    const calculatedProfit = numAmount * roiDecimal;
+
+    const investmentData = {
+      plan: selectedPlan.name.split(" ")[0].toUpperCase(), // "STARTER", "PREMIUM", "PRO"
+      amount: numAmount,
+      roiPercent: parseFloat(selectedPlan.roi),
+      profit: calculatedProfit,
+      totalPayout: numAmount + calculatedProfit,
+      coin: coin.toUpperCase(),
+    };
+
+    try {
+      const res = await api.post("/fiat/invest", investmentData);
+      if (res.status === 201) {
+        setIsModalOpen(false);
+        setAmount("");
+        setSelectedPlan(null);
+        alert("Investment successfully initiated! Proceed to payment.");
+        navigate("/dashboard/transactions");
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Connection error. Try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    console.log({
-      coin,
-      wallet: wallets[coin],
-      plan: selectedPlan.name,
-      amount,
-    });
-
-    alert("Investment submitted successfully!");
   };
 
   return (
     <div className="space-y-6 p-4">
-
       {/* Coin Selection */}
       <div className="grid grid-cols-2 gap-4">
         <button
@@ -64,12 +96,6 @@ const Invest = () => {
         >
           Ethereum
         </button>
-      </div>
-
-      {/* Wallet Display */}
-      <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-        <p className="text-sm text-gray-400">Send payment to this wallet:</p>
-        <p className="break-all font-semibold mt-2">{wallets[coin]}</p>
       </div>
 
       {/* Plan Selection */}
@@ -103,11 +129,84 @@ const Invest = () => {
 
       {/* Submit */}
       <button
-        onClick={handleSubmit}
+        onClick={handleReview}
         className="w-full p-4 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 font-semibold"
       >
         Submit Investment
       </button>
+
+      {/* UI MODAL */}
+      
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#0B0F19] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <h3 className="text-xl font-bold text-white mb-6">
+              Review Investment
+            </h3>
+
+            <div className="space-y-4 border-b border-white/5 pb-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Selected Plan</span>
+                <span className="text-white font-semibold">
+                  {selectedPlan?.name}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Principal Amount</span>
+                <span className="text-white font-mono">
+                  ${Number(amount).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">ROI ({selectedPlan?.roi})</span>
+                <span className="text-green-400 font-mono">
+                  + $
+                  {(
+                    Number(amount) *
+                    (parseFloat(selectedPlan?.roi) / 100)
+                  ).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <div className="py-6 flex justify-between items-center">
+              <span className="text-gray-400 font-bold uppercase tracking-widest text-xs">
+                Total Payout
+              </span>
+              <span className="text-2xl font-extrabold text-white font-mono">
+                $
+                {(
+                  Number(amount) +
+                  Number(amount) * (parseFloat(selectedPlan?.roi) / 100)
+                ).toLocaleString()}
+              </span>
+            </div>
+
+            {/* Wallet Display */}
+            <div className="p-4 mb-4 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-sm text-gray-400">
+                Send payment to this wallet and confirm.
+              </p>
+              <p className="break-all font-semibold mt-2">{ isLoading ? 'Fetching Wallet address' : wallets?.[coin] || 'Wallet address not found!'}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-4 rounded-xl border border-white/10 text-gray-400 font-semibold hover:bg-white/5 transition"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={isSubmitting}
+                onClick={confirmInvestment}
+                className="p-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                {isSubmitting ? "Processing..." : "Confirm & Pay"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

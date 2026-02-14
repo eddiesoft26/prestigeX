@@ -25,7 +25,6 @@ const DashboardCards = () => {
   });
 
   if (isLoading) return <DashboardCardsSkeleton />;
-  console.log(data)
 
   const getStatus = (amount) => {
     if (amount < 1000) return { label: "Low Prtfolio", color: "bg-red-500" };

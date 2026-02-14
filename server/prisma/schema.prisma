@@ -40,6 +40,7 @@ model Investment {
   amount      Float
   roiPercent  Float
   profit      Float     @default(0)
+  totalPayout Float     @default(0) 
 
   status      Status    @default(PENDING)
 
@@ -92,7 +93,7 @@ model Transaction {
 model AdminWallet {
   id        String   @id @default(uuid())
   coin  CoinType     @unique // "BTC" or "ETH"
-  address   String
+  address   String   
   createdAt DateTime @default(now())
 }
 

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Investment" ADD COLUMN     "totalPayout" DOUBLE PRECISION NOT NULL DEFAULT 0;

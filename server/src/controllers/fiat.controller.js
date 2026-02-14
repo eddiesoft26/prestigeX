@@ -1,4 +1,25 @@
-import prisma from "../prisma/client.js";
+import prisma from "../prisma.js";
+
+export const createInvestment = async (req, res) => {
+  const { amount, plan, roiPercent, profit, totalPayout } = req.body;
+
+  try {
+    const investment = await prisma.investment.create({
+      data: {
+        userId: req.user.id,
+        plan,
+        amount,
+        roiPercent: parseFloat(roiPercent),
+        profit,
+        totalPayout, // ✅ Save the pre-calculated value
+      },
+    });
+
+    res.status(201).json(investment);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create investment" });
+  }
+};
 
 export const requestWithdrawal = async (req, res) => {
   const userId = req.user.id;
@@ -58,7 +79,6 @@ export const requestWithdrawal = async (req, res) => {
       message: "Withdrawal request submitted",
       withdrawal,
     });
-
   } catch (error) {
     res.status(500).json({ message: "Withdrawal failed" });
   }

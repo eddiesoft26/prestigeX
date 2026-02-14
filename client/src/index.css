@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+@theme {
+  /* Prestige Color Palette */
+  --color-brand-dark: #0a0a0b; /* Deep Charcoal */
+  --color-brand-surface: #161618; /* Card Background */
+  --color-brand-accent: #007aff; /* Trust Blue */
+  --color-brand-teal: #2dd4bf; /* Stability Teal */
+  --color-brand-silver: #94a3b8; /* Tech Gray */
+  --color-brand-muted: #26262a; /* Borders */
+
+  /* Industry Standard Signals */
+  --color-brand-gain: #10b981;
+  --color-brand-loss: #ef4444;
+
+  /* Refined Spacing & Radii */
+  --radius-invest: 0.75rem;
+
+  /* Custom Breakpoints (Classic Standard) */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+}
+@layer base {
+  body {
+    @apply bg-brand-dark text-brand-silver font-sans;
+  }
+}
+@layer utilities {
+  .logo-size {
+    @apply w-30 sm:w-35 md:w-40 lg:w-45 xl:w-50;
+  }
+  /* =========================
+     BRAND LOGO TYPOGRAPHY
+     Used in navbar logo (Prestige.Inv)
+  ========================== */
+  .font-brand-logo {
+    @apply font-sans font-bold tracking-tighter uppercase italic;
+  }
+
+  /* =========================
+     HERO HEADLINE TYPOGRAPHY
+     Used for main landing headline
+  ========================== */
+  .font-hero {
+    @apply font-sans font-medium tracking-tight;
+  }
+
+  /* =========================
+     DATA / FINANCIAL NUMBERS
+     Used for % change, prices, balances
+  ========================== */
+  .font-data {
+    @apply font-mono;
+  }
+
+  /* =========================
+     LABEL / META TEXT
+     Used for small asset labels
+     (TREASURY BONDS, CRYPTO ASSETS)
+  ========================== */
+  .font-label {
+    @apply text-xs font-semibold uppercase tracking-wide;
+  }
+}
+
+@layer components {
+  /* The "Prestige" Layout Container */
+  .layout-container {
+    @apply mx-auto max-w-7xl px-6 lg:px-12;
+  }
+
+  /* Perfect Centering */
+  .center-content {
+    @apply flex flex-col items-center justify-center text-center;
+  }
+
+  /* The Investment Card - Sharp and Technical */
+  .invest-card {
+    @apply rounded-(--radius-invest) border border-brand-muted 
+         bg-brand-surface p-6 transition-all duration-200
+         hover:border-brand-silver/40 hover:shadow-lg;
+  }
+
+  .surface-glass {
+    @apply bg-brand-surface/70 backdrop-blur-md border border-white/5;
+  }
+
+  /* Base button FIRST */
+  .btn-base {
+    @apply inline-flex items-center justify-center rounded-lg px-6 py-3 
+           text-sm font-bold tracking-wide transition-all active:scale-95;
+  }
+
+  /* Now extensions can safely apply it */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg px-6 py-3 
+           text-sm font-bold tracking-wide transition-all active:scale-95 bg-brand-accent text-white hover:bg-blue-600;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg px-6 py-3 
+           text-sm font-bold tracking-wide transition-all active:scale-95  border border-brand-silver/30 text-brand-silver 
+           hover:bg-white/5 hover:text-white;
+  }
+}
+
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s forwards;
+}
+
+/* Fade-in animation for hero content */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollTicker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scrollTicker 25s linear infinite;
+}
+
+
+.animate-ticker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: tickerMove 20s linear infinite;
+}
+
+@keyframes infinite-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-infinite-scroll {
+  animation: infinite-scroll 28s linear infinite;
+}

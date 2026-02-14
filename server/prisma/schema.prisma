@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  fullName        String
+  email           String   @unique
+  password        String
+  role            Role     @default(USER)
+
+
+  welcomeBonus    Float    @default(20)
+  referralBonus   Float    @default(0)
+
+  referralCode    String   @unique
+  referredById    String?
+  referredBy      User?    @relation("UserReferral", fields: [referredById], references: [id])
+  referrals       User[]   @relation("UserReferral")
+
+  investments     Investment[]
+  withdrawals     Withdrawal[]
+  deposits        Deposit[]
+  transactions    Transaction[]
+
+  createdAt       DateTime @default(now())
+}
+
+model Investment {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  plan        PlanType
+  amount      Float
+  roiPercent  Float
+  profit      Float     @default(0)
+
+  status      Status    @default(PENDING)
+
+  startDate   DateTime?
+  endDate     DateTime?
+
+  createdAt   DateTime @default(now())
+}
+
+model Deposit {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  amount      Float
+  coin        CoinType
+  proofUrl    String?
+
+  status      Status   @default(PENDING)
+
+  createdAt   DateTime @default(now())
+}
+
+model Withdrawal {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+
+  amount        Float
+  walletAddress String
+
+  status        Status   @default(PENDING)
+  rejectionReason String?
+
+  createdAt     DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  type      TransactionType
+  amount    Float
+  status    Status   @default(APPROVED)
+
+  createdAt DateTime @default(now())
+}
+
+model AdminWallet {
+  id        String   @id @default(uuid())
+  coin  CoinType     @unique // "BTC" or "ETH"
+  address   String
+  createdAt DateTime @default(now())
+}
+
+
+enum PlanType {
+  STARTER
+  PREMIUM
+  PRO
+}
+
+enum CoinType {
+  BTC
+  ETH
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TransactionType {
+  DEPOSIT
+  INVESTMENT
+  WITHDRAWAL
+  REFERRAL_BONUS
+  ROI
+}
+
+enum Role {
+  USER
+  ADMIN
+  MANAGER
+}
+

@@ -137,7 +137,7 @@ export default function AuthPage() {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="/signup-login.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/dyjvi61hm/video/upload/v1771155170/signup-login_lee8nh.mp4" type="video/mp4" />
           </video>
 
           <div className="absolute inset-0 bg-black/40 flex items-end p-6">

@@ -18,7 +18,7 @@ const Hero = () => {
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover brightness-75"
       >
-        <source src="/hero_bg.mp4" type="video/mp4" />
+        <source src="https://res.cloudinary.com/dyjvi61hm/video/upload/v1771155339/hero_bg_hqyidj.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 

@@ -27,10 +27,10 @@ const DashboardLayout = () => {
 
       <MobileSidebar open={mobileOpen} setOpen={setMobileOpen}/>
 
-      <div className="flex">
+      <div className="flex overflow-hidden">
         <DashboardSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-        <main className="flex-1 p-6 space-y-6">
+        <main className="flex-1 min-w-0 w-full p-6 space-y-6 overflow-y-auto overflow-x-hidden">
           <Outlet />
         </main>
       </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import {
   FaTwitter,
   FaFacebookF,
@@ -12,7 +12,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10">
         {/* Brand */}
         <div>
-          <h3 className="text-white text-2xl font-bold mb-4">Prestige INV</h3>
+          <h3 className="text-white text-2xl font-bold mb-4">PrestigeX</h3>
           <p className="text-sm leading-relaxed">
             Secure and intelligent digital investment solutions designed to help
             investors grow wealth consistently through advanced financial
@@ -24,24 +24,28 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-semibold mb-4">Quick Links</h4>
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-white cursor-pointer">Home</li>
+            <li className="hover:text-white cursor-pointer"><Link to="/home">Home</Link></li>
             <li className="hover:text-white cursor-pointer">
-              Investment Plans
+              <Link to="/plans">Investment Plans</Link>
             </li>
-            <li className="hover:text-white cursor-pointer">About Us</li>
-            <li className="hover:text-white cursor-pointer">Contact</li>
+            <li className="hover:text-white cursor-pointer"><Link to="/about">About Us</Link></li>
+            <li className="hover:text-white cursor-pointer"><Link to="/contact">Contact</Link></li>
           </ul>
         </div>
 
         {/* Support */}
         <div>
-          <h4 className="text-white font-semibold mb-4">Support</h4>
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-white cursor-pointer">Help Center</li>
-            <li className="hover:text-white cursor-pointer">FAQs</li>
-            <li className="hover:text-white cursor-pointer">Privacy Policy</li>
             <li className="hover:text-white cursor-pointer">
-              Terms of Service
+              {" "}
+              <Link to="help-center">Help Center</Link>
+            </li>
+            <li className="hover:text-white cursor-pointer">
+              {" "}
+              <Link to="/privacy-policy">Privacy Policy</Link>
+            </li>
+            <li className="hover:text-white cursor-pointer">
+              <Link to="/terms-and-conditions">Terms And Conditions</Link>
             </li>
           </ul>
         </div>
@@ -72,15 +76,16 @@ const Footer = () => {
         © {new Date().getFullYear()} Prestige INV. All rights reserved.
       </div>
       <p className="px-4 py-5">
-        <span className="text-brand-loss">Risk Warning:</span> Cryptocurrency trading carries inherent risks due to market
-        volatility and leverage. Investments may result in partial or total loss
-        of capital. However, by investing with PrestigeX, you benefit from
-        professional risk management tools, secure portfolio strategies, and
-        transparent monitoring, helping you make informed decisions and protect
-        your investments. At PrestigeX, we provide educational resources,
-        real-time analytics, and automated strategies to support your investment
-        journey. While no investment is entirely risk-free, our platform is
-        designed to guide you safely and confidently in the crypto market.
+        <span className="text-brand-loss">Risk Warning:</span> Cryptocurrency
+        trading carries inherent risks due to market volatility and leverage.
+        Investments may result in partial or total loss of capital. However, by
+        investing with PrestigeX, you benefit from professional risk management
+        tools, secure portfolio strategies, and transparent monitoring, helping
+        you make informed decisions and protect your investments. At PrestigeX,
+        we provide educational resources, real-time analytics, and automated
+        strategies to support your investment journey. While no investment is
+        entirely risk-free, our platform is designed to guide you safely and
+        confidently in the crypto market.
       </p>
     </footer>
   );

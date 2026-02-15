@@ -40,7 +40,7 @@ const HowItWorks = () => {
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
-          How Prestige Inv Works
+          How PrestigeX Works
         </h2>
         <p className="text-gray-400 text-lg">
           Start investing in digital assets in just a few simple steps.

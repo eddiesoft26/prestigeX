@@ -21,6 +21,12 @@
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
 }
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 @layer base {
   body {
     @apply bg-brand-dark text-brand-silver font-sans;

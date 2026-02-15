@@ -151,7 +151,7 @@ const Contact = () => {
           >
             <div className="flex flex-col items-center">
               <span className="text-4xl mb-2">📧</span>
-              <p className="text-gray-700 font-medium">support@oakvest.com</p>
+              <p className="text-gray-700 font-medium">support@prestigex.com</p>
             </div>
             <div className="flex flex-col items-center">
               <span className="text-4xl mb-2">📞</span>

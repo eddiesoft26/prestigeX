@@ -22,6 +22,9 @@ import Transactions from "./dashboard/pages/Transactions";
 import PaymentProof from "./dashboard/pages/PaymentProof";
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ProtectedRoute from "./components/ProtectedRoute";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsAndConditions from "./components/TermsAndConditions";
+import HelpCenter from "./components/HelpCenter";
 
 const App = () => {
   return (
@@ -41,6 +44,9 @@ const App = () => {
             <Route path="/bonuses" element={<Bonuses />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/help-center" element={<HelpCenter />} />
           </Route>
 
           {/* Private routes */}

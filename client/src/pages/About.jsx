@@ -41,7 +41,7 @@ const About = () => {
       >
         <div className="max-w-3xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            About OAKVEST
+            About PrestigeX
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6">
             We are a modern crypto investment company helping you grow your wealth through secure and profitable trading. Your success is our priority.

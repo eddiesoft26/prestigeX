@@ -4,13 +4,13 @@ import React from "react";
 const bonusesData = [
   {
     title: "Welcome Bonus",
-    amount: "10% on First Deposit",
+    amount: "$20 Welcome Bonus",
     description: "Kickstart your journey with an instant 10% bonus on your first investment.",
     icon: "🎁",
   },
   {
     title: "Referral Bonus",
-    amount: "$50 per Friend",
+    amount: "$20 per Friend",
     description: "Invite your friends and earn $50 for every successful referral.",
     icon: "🤝",
   },

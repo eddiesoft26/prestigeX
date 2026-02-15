@@ -65,7 +65,6 @@ const FAQ = () => {
           </motion.p>
         </div>
       </section>
-      <DashboardLayout />
     </main>
   );
 };

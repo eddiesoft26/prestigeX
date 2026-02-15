@@ -7,20 +7,21 @@ import authRoutes from "./routes/auth.routes.js";
 import fiatRoutes from "./routes/fiat.routes.js"
 import walletRoute from "./routes/adminWallets.routes.js";
 import referralRoutes from "./routes/referral.routes.js";
-
+  
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:5173', // Local development
-  /\.vercel\.app$/          // Matches any Vercel preview URL or production URL
-];
-
+// const allowedOrigins = [
+//   'http://localhost:5173', // Local development
+//   /\.vercel\.app$/          // Matches any Vercel preview URL or production URL
+// ];
 app.use(cors({
-  origin: allowedOrigins, 
+  origin: 'http://localhost:5173', 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
+
 app.use(express.json());
 app.use(morgan("dev")); // Logs every request like "GET /api/dashboard 200"
 

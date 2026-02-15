@@ -6,57 +6,66 @@ export const approveInvestment = async (req, res) => {
   try {
     // 1. Start the Secure Transaction Bubble
     const result = await prisma.$transaction(async (tx) => {
-      
-      // 2. Fetch the investment within the transaction (using 'tx')
-      const investment = await tx.investment.findUnique({
-        where: { id: investmentId },
-      });
-
-      if (!investment) {
-        throw new Error("Investment not found");
+  
+  // 1. Fetch investment AND the investor's referral info
+  const investment = await tx.investment.findUnique({
+    where: { id: investmentId },
+    include: {
+      user: {
+        select: { referredById: true } // 👈 We need to see who referred this person
       }
+    }
+  });
 
-      if (investment.status !== "PENDING") {
-        throw new Error("Investment has already been processed");
-      }
+  if (!investment) throw new Error("Investment not found");
+  if (investment.status !== "PENDING") throw new Error("Processed already");
 
-      // 3. Logic for Dates and Profit
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(startDate.getDate() + 30); // 30-day plan logic
-      const profit = (investment.amount * investment.roiPercent) / 100;
+  // 2. Standard Logic for Dates/Profit
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(startDate.getDate() + 30);
+  const profit = (investment.amount * investment.roiPercent) / 100;
 
-      // 4. Update the Investment Status
-      const updatedInvestment = await tx.investment.update({
-        where: { id: investmentId },
-        data: {
-          status: "APPROVED",
-          startDate,
-          endDate,
-          profit,
-        },
-      });
+  // 3. Update Investment Status
+  const updatedInvestment = await tx.investment.update({
+    where: { id: investmentId },
+    data: { status: "APPROVED", startDate, endDate, profit },
+  });
 
-      // 5. Create the Transaction Record (The "Bank Statement" entry)
-      // This is what links to the User's transaction list automatically
-      await tx.transaction.create({
-        data: {
-          userId: investment.userId, // Connects to the User via Foreign Key
-          amount: investment.amount,
-          type: "DEPOSIT",           // Tagged as a Deposit into an active plan
-          status: "APPROVED",
-        },
-      });
+  // 4. Record Investment Transaction for the Investor
+  await tx.transaction.create({
+    data: {
+      userId: investment.userId,
+      amount: investment.amount,
+      type: "INVESTMENT", // Changed from DEPOSIT to match your enum for clarity
+      status: "APPROVED",
+    },
+  });
 
-      // Return the updated investment so we can send it to the frontend
-      return updatedInvestment;
+  // 5. 🚀 NEW: THE REFERRAL COMMISSION LOGIC
+  if (investment.user.referredById) {
+    const commission = investment.amount * 0.10; // 10% commission
+
+    // Update Referrer's Bonus Balance
+    await tx.user.update({
+      where: { id: investment.user.referredById },
+      data: { referralBonus: { increment: commission } }
     });
 
-    // 6. If the code reaches here, both steps succeeded!
-    res.status(200).json({
-      message: "Investment approved and transaction history recorded",
-      data: result,
+    // Create a Transaction record for the Referrer
+    await tx.transaction.create({
+      data: {
+        userId: investment.user.referredById,
+        amount: commission,
+        type: "REFERRAL_BONUS",
+        status: "APPROVED",
+      },
     });
+  }
+
+  return updatedInvestment;
+});
+
 
   } catch (error) {
     // 7. If anything failed inside the $transaction, nothing was saved to the DB

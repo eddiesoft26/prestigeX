@@ -36,6 +36,7 @@ const DashboardCards = () => {
   const rawAssets = data?.totalAssets;
 
   const status = getStatus(rawAssets);
+  console.log(data?._count?.referrals)
 
 
   // HELPER: Splits "$1,250.00" into styled spans
@@ -130,7 +131,7 @@ const DashboardCards = () => {
               Network
             </p>
             <p className="text-xl font-extrabold text-white font-mono">
-              {data?.referralsCount ?? 0}{" "}
+              {data?.referralsCount ?? 0}{" "} 
               <span className="text-[10px] font-medium text-gray-500">
                 Users
               </span>

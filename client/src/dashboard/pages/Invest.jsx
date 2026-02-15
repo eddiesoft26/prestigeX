@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 const plans = [
   { id: 1, name: "Starter Plan", min: 100, roi: "20%" },
   { id: 2, name: "Premium Plan", min: 1000, roi: "35%" },
-  { id: 3, name: "Pro Plan", min: 10000, roi: "50%" },
+  { id: 3, name: "Pro/Ultimate Plan", min: 5000, roi: "50%" },
 ];
 
 const Invest = () => {
@@ -21,7 +21,17 @@ const Invest = () => {
   const [amount, setAmount] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const navigate = useNavigate();
+
+  const handleCopy = (text) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    // Reset the "Copied!" text back to the icon after 2 seconds
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const { data: wallets, isLoading } = useQuery({
     queryKey: ["adminWallets"],
@@ -62,7 +72,7 @@ const Invest = () => {
         setAmount("");
         setSelectedPlan(null);
         alert("Investment successfully initiated! Proceed to payment.");
-        navigate("/dashboard/transactions");
+        navigate("/dashboard/payment-proof");
       }
     } catch (error) {
       alert(error.response?.data?.message || "Connection error. Try again.");
@@ -136,7 +146,7 @@ const Invest = () => {
       </button>
 
       {/* UI MODAL */}
-      
+
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-[#0B0F19] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
@@ -183,12 +193,49 @@ const Invest = () => {
             </div>
 
             {/* Wallet Display */}
-            <div className="p-4 mb-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="p-4 mb-4 rounded-xl bg-white/5 border border-white/10 relative group">
               <p className="text-sm text-gray-400">
                 Send payment to this wallet and confirm.
               </p>
-              <p className="break-all font-semibold mt-2">{ isLoading ? 'Fetching Wallet address' : wallets?.[coin] || 'Wallet address not found!'}</p>
+
+              <div className="flex items-center justify-between mt-2 gap-2">
+                <p className="break-all font-mono text-sm font-semibold text-blue-400">
+                  {isLoading
+                    ? "Fetching Wallet address..."
+                    : wallets?.[coin] || "Wallet address not found!"}
+                </p>
+
+                {!isLoading && wallets?.[coin] && (
+                  <button
+                    onClick={() => handleCopy(wallets[coin])}
+                    className="shrink-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    title="Copy Address"
+                  >
+                    {copied ? (
+                      <span className="text-[10px] font-bold text-green-400 uppercase">
+                        Copied!
+                      </span>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5 0h8.25c.621 0 1.125.504 1.125 1.125v3.375m0 3.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM9.25 10.5h.008v.008H9.25V10.5Z"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setIsModalOpen(false)}

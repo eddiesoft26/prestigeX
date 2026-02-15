@@ -4,63 +4,56 @@ export const getDashboardSummary = async (req, res) => {
   const userId = req.user.id;
 
   try {
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
+    // 1. Get User Bonuses & Referral Count (Standard query)
+  const user = await prisma.user.findUnique({
+  where: { id: userId },
+  select: {
+    welcomeBonus: true,
+    referralBonus: true,
+    _count: {
       select: {
-        welcomeBonus: true,
-        referralBonus: true,
-          _count: {
-          select: { referrals: true },
-        },
+        referrals: true,
+      },
+    },
+  },
+});
+
+console.log("DB RAW COUNT:", user._count.referrals); 
+
+    // 2. 🔥 AGGREGATE INVESTMENTS (Sum Principal and Profit)
+    const investmentTotals = await prisma.investment.aggregate({
+      where: { userId, status: "APPROVED" },
+      _sum: {
+        amount: true,
+        profit: true,
       },
     });
 
-    // Approved investments
-    const investments = await prisma.investment.findMany({
+    // 3. 🔥 AGGREGATE WITHDRAWALS (Sum Pending and Approved)
+    const withdrawalTotals = await prisma.withdrawal.aggregate({
       where: {
         userId,
-        status: "APPROVED",
+        status: { in: ["PENDING", "APPROVED"] },
+      },
+      _sum: {
+        amount: true,
       },
     });
 
-    const totalInvested = investments.reduce(
-      (sum, inv) => sum + inv.amount,
-      0
-    );
+    // 4. Extract the raw numbers (handle nulls with || 0)
+    const totalInvested = investmentTotals._sum.amount || 0;
+    const totalProfit = investmentTotals._sum.profit || 0;
+    const totalWithdrawn = withdrawalTotals._sum.amount || 0;
 
-    const totalProfit = investments.reduce(
-      (sum, inv) => sum + (inv.profit || 0),
-      0
-    );
+    // 5. CALCULATE FINAL BALANCES
+    // Total Assets: (Principal + Profit + Bonuses) - Total Withdrawn
+    const totalAssets = (totalInvested + totalProfit + user.welcomeBonus + user.referralBonus) - totalWithdrawn;
 
-    // withdrawals
-    const withdrawals = await prisma.withdrawal.findMany({
-      where: {
-        userId,
-        status: {
-          in: ["PENDING", "APPROVED"],
-        },
-      },
-    });
+    // Withdrawable: (Principal + Profit) - Total Withdrawn
+    const withdrawableBalance = (totalInvested + totalProfit) - totalWithdrawn;
 
-    const totalWithdrawn = withdrawals.reduce(
-      (sum, w) => sum + w.amount,
-      0
-    );
-
-    // withdrawable balance (ONLY real investment earnings)
-    const withdrawableBalance =
-      totalInvested + totalProfit - totalWithdrawn;
-
-    // total assets (bonuses included)
-    const totalAssets =
-      totalInvested +
-      totalProfit +
-      user.welcomeBonus +
-      user.referralBonus;
-
-      const data ={
+    // 6. Format Response
+    const data = {
       totalAssets,
       totalInvested,
       totalProfit,
@@ -68,13 +61,12 @@ export const getDashboardSummary = async (req, res) => {
       referralBonus: user.referralBonus,
       withdrawableBalance,
       referralsCount: user._count.referrals,
-      _count: undefined,
-    }
+    };
 
     res.json(data);
 
   } catch (error) {
-    console.error('THE ERROR', error.message)
-    res.status(500).json({ message: "Failed to load dashboard data" });
+    console.error('SUMMARY AGGREGATE ERROR:', error.message);
+    res.status(500).json({ message: "Failed to calculate financial summary" });
   }
 };

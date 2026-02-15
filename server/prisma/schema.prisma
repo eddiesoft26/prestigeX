@@ -44,6 +44,8 @@ model Investment {
 
   status      Status    @default(PENDING)
 
+  proofUrl    String?  
+
   startDate   DateTime?
   endDate     DateTime?
 
@@ -71,6 +73,7 @@ model Withdrawal {
 
   amount        Float
   walletAddress String
+  coin          CoinType
 
   status        Status   @default(PENDING)
   rejectionReason String?

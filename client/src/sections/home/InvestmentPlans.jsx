@@ -8,7 +8,7 @@ const plans = [
     name: "Starter Plan",
     price: "$500 Min",
     roi: "Up to 15% ROI",
-    duration: "30 Days",
+    duration: "24hrs",
     features: [
       "Automated portfolio management",
       "24/7 market monitoring",
@@ -18,10 +18,10 @@ const plans = [
     highlighted: false,
   },
   {
-    name: "Growth Plan",
-    price: "$5,000 Min",
+    name: "Premium Plan",
+    price: "$1,000 Min",
     roi: "Up to 35% ROI",
-    duration: "60 Days",
+    duration: "24hrs",
     features: [
       "Advanced AI-driven trading",
       "Priority transaction processing",
@@ -31,10 +31,10 @@ const plans = [
     highlighted: true,
   },
   {
-    name: "Premium Plan",
-    price: "$20,000 Min",
-    roi: "Up to 60% ROI",
-    duration: "90 Days",
+    name: "Pro/Ultimate Plan",
+    price: "$5,000 Min",
+    roi: "Up to 50% ROI",
+    duration: "24hrs",
     features: [
       "Institutional-grade strategies",
       "Private portfolio advisory",

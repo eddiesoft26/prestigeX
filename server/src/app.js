@@ -6,6 +6,7 @@ import adminRoutes from "./routes/admin.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import fiatRoutes from "./routes/fiat.routes.js"
 import walletRoute from "./routes/adminWallets.routes.js";
+import referralRoutes from "./routes/referral.routes.js";
 
 
 const app = express();
@@ -24,7 +25,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/fiat", fiatRoutes);
 app.use("/api/admin-wallets", walletRoute);
-
+app.use("/api/referrals",  referralRoutes)
 
 
 

@@ -1,112 +1,225 @@
-// dashboard/pages/Withdraw.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  HiOutlineWallet,
+  HiCheckCircle,
+  HiClock,
+  HiXCircle,
+} from "react-icons/hi2";
+import { useQuery } from "@tanstack/react-query";
+import api from "../../api/axios";
 
 const Withdraw = () => {
   const [coin, setCoin] = useState("btc");
   const [amount, setAmount] = useState("");
   const [wallet, setWallet] = useState("");
 
-  // Mocked user balance
-  const balance = 12500;
+  const navigate = useNavigate();
+  // Professional Money Formatter
+  const moneyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 
-  const handleSubmit = () => {
-    if (!amount || !wallet) {
-      alert("Please fill in all fields!");
-      return;
-    }
+  // FETCH BALANCE
+  const { data: wallets, isSummaryLoading } = useQuery({
+    queryKey: ["summary"],
+    queryFn: () => api.get("/dashboard/summary").then((res) => res.data),
+    staleTime: Infinity, // These rarely change, so keep them in cache forever
+  });
 
-    if (amount > balance) {
-      alert("Withdrawal amount exceeds available balance!");
-      return;
-    }
+  const balance = isSummaryLoading ? 0 : wallets?.withdrawableBalance;
 
-    console.log({
+  // Helper to style currency parts
+  const renderBalance = (val) => {
+    const parts = moneyFormatter.formatToParts(val);
+    return (
+      <div className="flex items-baseline font-mono tracking-tighter">
+        {parts.map((part, i) => (
+          <span
+            key={i}
+            className={
+              part.type === "currency"
+                ? "text-lg text-gray-500 mr-1"
+                : part.type === "fraction"
+                  ? "text-lg text-white/50"
+                  : "text-3xl font-extrabold text-white"
+            }
+          >
+            {part.value}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  const handleSubmit = async () => {
+    if (!amount || !wallet) return alert("Please fill in all fields!");
+    if (parseFloat(amount) > balance) return alert("Insufficient funds!");
+
+    const walletAddress = wallet
+    const withdrawalData = {
       coin,
-      amount,
-      wallet,
-    });
+      amount: parseFloat(amount),
+      walletAddress,
+    };
 
-    alert("Withdrawal request submitted!");
-    setAmount("");
-    setWallet("");
+    try {
+      // 2. ADD 'await' HERE
+      const res = await api.post("/fiat/withdraw", withdrawalData);
+
+      // 3. Axios puts successful data in 'res.data'
+      if (res.status === 201 || res.status === 200) {
+        alert("Withdrawal request submitted!");
+        setAmount("");
+        setWallet("");
+        navigate("/dashboard/transactions");
+      }
+    } catch (err) {
+      // 4. This is where your 400 Error "You must have invested..." lands!
+      const errorMessage = err.response?.data?.message || "An error occurred";
+      alert(errorMessage);
+      console.log("Detailed Error:", err.response?.data);
+    }
   };
 
   return (
-    <div className="space-y-6 p-4">
-      {/* Available Balance */}
-      <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-        <p className="text-sm text-gray-400">Available Balance</p>
-        <p className="text-2xl font-bold mt-1">${balance}</p>
+    <div className="max-w-2xl mx-auto space-y-8 p-4">
+      {/* 1. Glassmorphism Balance Card */}
+      <div className="relative p-6 rounded-3xl bg-linear-to-br from-[#0B0F19] to-blue-950/20 border border-white/10 shadow-2xl overflow-hidden">
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+          Available for Payout
+        </p>
+        {renderBalance(balance)}
+        <div className="mt-4 flex items-center gap-2 text-[10px] text-blue-400 font-bold uppercase tracking-tighter">
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+          Secure Settlement Active
+        </div>
       </div>
 
-      {/* Coin Selection */}
+      {/* 2. Asset Selector */}
       <div className="grid grid-cols-2 gap-4">
-        <button
-          onClick={() => setCoin("btc")}
-          className={`p-4 rounded-xl border font-semibold ${
-            coin === "btc"
-              ? "bg-blue-500 text-white"
-              : "border-white/20 text-gray-200"
-          }`}
-        >
-          Bitcoin
-        </button>
-
-        <button
-          onClick={() => setCoin("eth")}
-          className={`p-4 rounded-xl border font-semibold ${
-            coin === "eth"
-              ? "bg-blue-500 text-white"
-              : "border-white/20 text-gray-200"
-          }`}
-        >
-          Ethereum
-        </button>
+        {["btc", "eth"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setCoin(type)}
+            className={`flex items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300 font-bold ${
+              coin === type
+                ? "bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-900/20"
+                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+            }`}
+          >
+            <span className="uppercase">
+              {type === "btc" ? "Bitcoin" : "Ethereum"}
+            </span>
+          </button>
+        ))}
       </div>
 
-      {/* Amount Input */}
-      <input
-        type="number"
-        placeholder="Enter amount to withdraw"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none"
-      />
+      {/* 3. Inputs Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <input
+            type="number"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="w-full p-5 pt-8 rounded-2xl bg-[#0B0F19] border border-white/10 text-white font-mono text-xl outline-none focus:border-blue-500 transition-colors"
+          />
+          <label className="absolute left-5 top-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            Amount (USD)
+          </label>
+        </div>
 
-      {/* Wallet Input */}
-      <input
-        type="text"
-        placeholder="Enter your wallet address"
-        value={wallet}
-        onChange={(e) => setWallet(e.target.value)}
-        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none break-all"
-      />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Enter destination address"
+            value={wallet}
+            onChange={(e) => setWallet(e.target.value)}
+            className="w-full p-5 pt-8 rounded-2xl bg-[#0B0F19] border border-white/10 text-white font-medium text-sm outline-none focus:border-blue-500 transition-colors break-all"
+          />
+          <label className="absolute left-5 top-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            Recipient Wallet Address
+          </label>
+        </div>
+      </div>
 
-      {/* Submit Button */}
+      {/* 4. Action Button */}
       <button
         onClick={handleSubmit}
-        className="w-full p-4 rounded-xl bg-linear  -to-r from-blue-500 to-indigo-600 font-semibold"
+        className="w-full p-5 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-700 text-white font-extrabold uppercase tracking-widest shadow-xl hover:brightness-110 active:scale-[0.98] transition-all"
       >
-        Withdraw
+        Request Settlement
       </button>
 
-      {/* Optional: Last 3 Withdrawals */}
-      <div className="mt-6">
-        <h4 className="font-semibold mb-2">Recent Withdrawals</h4>
-        <ul className="space-y-2">
-          <li className="p-3 bg-white/5 rounded-xl border border-white/10 flex justify-between">
-            <span>BTC - $500</span>
-            <span className="text-sm text-gray-400">Pending</span>
-          </li>
-          <li className="p-3 bg-white/5 rounded-xl border border-white/10 flex justify-between">
-            <span>ETH - $1200</span>
-            <span className="text-sm text-green-400">Completed</span>
-          </li>
-          <li className="p-3 bg-white/5 rounded-xl border border-white/10 flex justify-between">
-            <span>BTC - $250</span>
-            <span className="text-sm text-red-400">Rejected</span>
-          </li>
-        </ul>
+      {/* 5. Recent Activity with Pro Badges */}
+      <div className="pt-6">
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+            Recent Activity
+          </h4>
+          <button className="text-[10px] text-blue-400 font-bold uppercase hover:underline">
+            View All
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {[
+            {
+              coin: "BTC",
+              amount: "500.00",
+              status: "Pending",
+              icon: <HiClock />,
+              color: "text-yellow-400",
+              bg: "bg-yellow-400/10",
+              border: "border-yellow-400/20",
+            },
+            {
+              coin: "ETH",
+              amount: "1,200.00",
+              status: "Completed",
+              icon: <HiCheckCircle />,
+              color: "text-emerald-400",
+              bg: "bg-emerald-400/10",
+              border: "border-emerald-400/20",
+            },
+            {
+              coin: "BTC",
+              amount: "250.00",
+              status: "Rejected",
+              icon: <HiXCircle />,
+              color: "text-red-400",
+              bg: "bg-red-400/10",
+              border: "border-red-400/20",
+            },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="p-4 bg-white/2 rounded-2xl border border-white/5 flex justify-between items-center group hover:bg-white/4 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg bg-white/5 text-gray-400`}>
+                  <HiOutlineWallet size={18} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">
+                    {item.coin} Settlement
+                  </p>
+                  <p className="text-[10px] text-gray-500 font-mono">
+                    ${item.amount}
+                  </p>
+                </div>
+              </div>
+              <span
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-bold ${item.color} ${item.bg} ${item.border}`}
+              >
+                {item.icon} {item.status}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

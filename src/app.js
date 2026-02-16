@@ -12,12 +12,12 @@ import Koyeb from "./routes/koyeb.routes.js";
 
 const app = express();
 
-// const allowedOrigins = [
-//   'http://localhost:5173', // Local development
-//   /\.vercel\.app$/          // Matches any Vercel preview URL or production URL
-// ];
+const allowedOrigins = [
+  'http://localhost:5173', // Local development
+  /\.vercel\.app$/          // Matches any Vercel preview URL or production URL
+];
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: allowedOrigins, 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true

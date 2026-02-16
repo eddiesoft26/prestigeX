@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://prestigex.onrender.com/api', // Note the /api prefix
+  // This looks for the Vercel variable first. 
+  // If it's not found, it falls back to localhost for your local testing.
+  baseURL: import.meta.env.VITE_API_BASE_URL 
+    ? `${import.meta.env.VITE_API_BASE_URL}/api` 
+    : 'http://localhost:5000/api',
 });
 
 // Automatically attach the JWT to every request

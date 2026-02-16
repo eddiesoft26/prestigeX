@@ -15,7 +15,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://your-project-name.vercel.app' // Add this!
+  'https://prestige-x.vercel.app' // Add this!
 ];
 app.use(cors({
   origin: allowedOrigins, 

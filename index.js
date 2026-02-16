@@ -8,6 +8,9 @@ const PORT = process.env.PORT || 8000;
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
+app.get("/", (req, res) => {
+  res.status(200).send("PrestigeX is live now");
+});
 
 prisma
   .$connect()

@@ -15,6 +15,8 @@ import {
 const adminRouter = express.Router();
 adminRouter.use(protect, isAdmin);
 
+
+
 adminRouter.patch("/approve-investment/:investmentId", approveInvestment);
 
 adminRouter.put("/withdrawal/:withdrawalId/approve", approveWithdrawal);

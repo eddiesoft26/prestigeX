@@ -13,8 +13,9 @@ import Koyeb from "./routes/koyeb.routes.js";
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:5173', // Local development
-  /\.vercel\.app$/          // Matches any Vercel preview URL or production URL
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://your-project-name.vercel.app' // Add this!
 ];
 app.use(cors({
   origin: allowedOrigins, 

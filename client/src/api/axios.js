@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Note the /api prefix
+  baseURL: 'https://prestigex.onrender.com/api', // Note the /api prefix
 });
 
 // Automatically attach the JWT to every request

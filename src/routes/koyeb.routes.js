@@ -1,5 +1,5 @@
 import express from 'express'
-import { koyebGet } from '../controllers/koyeb.controller';
+import { koyebGet } from '../controllers/koyeb.controller.js';
 
 const Koyeb = express.Router();
 

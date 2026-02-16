@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-
 import { useAuth } from "../../context/AuthContext";
 
 const plans = [
@@ -47,33 +46,37 @@ const plans = [
 
 const InvestmentPlans = () => {
   const highlightedRef = useRef(null);
+  const containerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(1); // Default to Premium (index 1)
   const { openAuthModal } = useAuth();
 
+  // Handle centering the highlighted plan on load
   useEffect(() => {
-    const handleInitialScroll = () => {
-      if (window.innerWidth < 768 && highlightedRef.current) {
-        const container = highlightedRef.current.parentElement;
-        const element = highlightedRef.current;
+    if (window.innerWidth < 768 && highlightedRef.current) {
+      const container = containerRef.current;
+      const element = highlightedRef.current;
+      const scrollLeft =
+        element.offsetLeft -
+        container.clientWidth / 2 +
+        element.clientWidth / 2;
 
-        // Calculate the center position within the div only
-        const scrollLeft =
-          element.offsetLeft -
-          container.clientWidth / 2 +
-          element.clientWidth / 2;
-
-        container.scrollTo({
-          left: scrollLeft,
-          behavior: "smooth", // Use smooth for a nice feel
-        });
-      }
-    };
-
-    handleInitialScroll();
+      container.scrollTo({ left: scrollLeft, behavior: "auto" });
+    }
   }, []);
+
+  // Update dots on scroll
+  const handleScroll = () => {
+    if (containerRef.current) {
+      const { scrollLeft, clientWidth } = containerRef.current;
+      const index = Math.round(scrollLeft / (clientWidth * 0.7)); // Adjust based on min-w-[65%] + gap
+      setActiveIndex(index);
+    }
+  };
+
   return (
-    <section className="bg-[#0a0a0b] text-white py-24 px-6 md:px-20">
+    <section className="bg-[#121214] text-white py-24">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
+      <div className="text-center max-w-3xl mx-auto mb-16 px-6">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
           Investment Plans
         </h2>
@@ -83,27 +86,30 @@ const InvestmentPlans = () => {
         </p>
       </div>
 
-      {/* Plans */}
+      {/* Plans Container */}
       <div
-        className="/* Mobile: Scrollable Row */
-          flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-6 pb-8
-          /* Desktop: Static Grid-like Row */
-          md:overflow-x-visible md:snap-none md:flex-row md:justify-center md:items-center
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="
+          /* Mobile: Added horizontal padding (px-10) to prevent scale overlap */
+          flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-6 pb-12 px-10
+          /* Desktop: Clean up padding and alignment */
+          md:overflow-x-visible md:snap-none md:flex-row md:justify-center md:items-center md:px-20
         "
       >
         {plans.map((plan, index) => (
           <div
             key={index}
             ref={plan.highlighted ? highlightedRef : null}
-            className={`rounded-2xl p-10 border transition min-w-[65%] md:min-w-0 md:w-1/3 snap-center ${
+            className={`rounded-2xl p-10 border transition-all duration-300 min-w-[85%] md:min-w-0 md:w-1/3 snap-center ${
               plan.highlighted
-                ? "bg-[#0f172a] border-teal-500 scale-105 shadow-2xl"
+                ? "bg-[#0f172a] border-teal-500 scale-105 shadow-2xl z-10"
                 : "bg-[#0b1220] border-gray-800 hover:border-teal-500"
             }`}
           >
             {plan.highlighted && (
-              <div className="mb-4 text-center text-teal-400 text-sm uppercase tracking-wider">
-                <Link to="/auth?mode=register">Most Popular</Link>
+              <div className="mb-4 text-center text-teal-400 text-sm uppercase tracking-wider font-bold">
+                Most Popular
               </div>
             )}
 
@@ -119,13 +125,16 @@ const InvestmentPlans = () => {
 
             <ul className="space-y-3 mb-8 text-gray-300 text-sm">
               {plan.features.map((feature, i) => (
-                <li key={i}>• {feature}</li>
+                <li key={i} className="flex items-start gap-2">
+                  <span className="text-teal-500">•</span> {feature}
+                </li>
               ))}
             </ul>
-            <Link to="/auth?mode=register">
+
+            <Link to="/auth?mode=register" className="block w-full">
               <button
-                onClick={() => openAuthModal("login")}
-                className={`w-full py-3 rounded-lg font-semibold transition cursor-pointer ${
+                onClick={() => openAuthModal && openAuthModal("login")}
+                className={`w-full py-3 rounded-lg font-semibold transition-colors cursor-pointer ${
                   plan.highlighted
                     ? "bg-teal-500 hover:bg-teal-600 text-black"
                     : "border border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-black"
@@ -135,6 +144,18 @@ const InvestmentPlans = () => {
               </button>
             </Link>
           </div>
+        ))}
+      </div>
+
+      {/* Pagination Dots (Mobile Only) */}
+      <div className="flex justify-center gap-3 mt-4 md:hidden">
+        {plans.map((_, i) => (
+          <div
+            key={i}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              activeIndex === i ? "w-8 bg-teal-500" : "w-2 bg-gray-600"
+            }`}
+          />
         ))}
       </div>
     </section>

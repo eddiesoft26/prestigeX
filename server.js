@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-
-import app from "./app.js"; // This already has all your routes!
+import app from "./src/app";
 
 const PORT = process.env.PORT || 5000;
 

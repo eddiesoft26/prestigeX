@@ -3,35 +3,33 @@ import { useAuth } from "../../context/AuthContext";
 import { HiMenu } from "react-icons/hi";
 
 const DashboardNavbar = ({ setMobileOpen }) => {
-
-    const navLinks = [
-  { name: 'Dashboard', path: '/dashboard', end: true },
-  { name: 'Invest', path: '/dashboard/invest' },
-  { name: 'Withdraw', path: '/dashboard/withdraw' },
-  { name: 'Referrals', path: '/dashboard/referrals' },
-  { name: 'Transactions', path: '/dashboard/transactions' },
-  { name: 'Payment Proof', path: '/dashboard/payment-proof' }, // Fixed unique path
-];
+  const navLinks = [
+    { name: "Dashboard", path: "/dashboard", end: true },
+    { name: "Invest", path: "/dashboard/invest" },
+    { name: "Withdraw", path: "/dashboard/withdraw" },
+    { name: "Referrals", path: "/dashboard/referrals" },
+    { name: "Transactions", path: "/dashboard/transactions" },
+    { name: "Payment Proof", path: "/dashboard/payment-proof" }, // Fixed unique path
+  ];
 
   const { user, logout } = useAuth();
 
   const getInitials = (name) => {
-  if (!name) return "??"; // Fallback if name is missing
+    if (!name) return "??"; // Fallback if name is missing
 
-  // 1. Split by spaces, 2. Filter out extra spaces, 3. Map to first letter
-  const parts = name.trim().split(/\s+/);
-  
-  if (parts.length === 1) {
-    return parts[0].charAt(0).toUpperCase(); // Just "E" for "Edwin"
-  }
+    // 1. Split by spaces, 2. Filter out extra spaces, 3. Map to first letter
+    const parts = name.trim().split(/\s+/);
 
-  // Gets first letter of first name and first letter of last name
-  const firstInitial = parts[0].charAt(0);
-  const lastInitial = parts[parts.length - 1].charAt(0);
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase(); // Just "E" for "Edwin"
+    }
 
-  return (firstInitial + lastInitial).toUpperCase();
-};
+    // Gets first letter of first name and first letter of last name
+    const firstInitial = parts[0].charAt(0);
+    const lastInitial = parts[parts.length - 1].charAt(0);
 
+    return (firstInitial + lastInitial).toUpperCase();
+  };
 
   return (
     <header className="w-full h-16 flex items-center justify-between px-6 bg-black/60 backdrop-blur-md border-b border-white/10">
@@ -43,7 +41,15 @@ const DashboardNavbar = ({ setMobileOpen }) => {
         <HiMenu />
       </button>
 
-      <div className="font-bold text-xl"> <img src="/src/assets/logo_1.png" alt="logo" width={200} className="max-sm: w-35"/></div>
+      <div className="font-bold text-xl">
+        {" "}
+        <img
+          src="logo.png"
+          alt="prestige-logo"
+          width={200}
+          className="max-sm: w-35"
+        />
+      </div>
 
       <nav className="hidden md:flex gap-6 max-lg:gap-3 max-lg: text-xs">
         {navLinks.map((link) => (

@@ -36,8 +36,8 @@ const Navbar = () => {
           <div className="shrink-0">
             <div onClick={handleHomeClick} className="cursor-pointer">
               <img
-                src="/src/assets/logo_1.png"
-                alt="logo"
+                src="logo.png"
+                alt="prestige-logo"
                 className="w-24 sm:w-32 md:w-40"
               />
             </div>

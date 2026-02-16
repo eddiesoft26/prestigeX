@@ -55,7 +55,7 @@ const Hero = () => {
           />
 
           {/* Responsive line break for mobile */}
-          <span className="block sm:inline">serious investors.</span>
+          <span className="block sm:inline"> investors.</span>
         </p>
 
         {/* Call-to-Action Buttons */}

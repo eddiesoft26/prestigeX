@@ -50,15 +50,28 @@ const InvestmentPlans = () => {
   const { openAuthModal } = useAuth();
 
   useEffect(() => {
-    if (window.innerWidth < 768 && highlightedRef) {
-      highlightedRef.current.scrollIntoView({
-        behavior: "auto",
-        inline: "center",
-      });
-    }
+    const handleInitialScroll = () => {
+      if (window.innerWidth < 768 && highlightedRef.current) {
+        const container = highlightedRef.current.parentElement;
+        const element = highlightedRef.current;
+
+        // Calculate the center position within the div only
+        const scrollLeft =
+          element.offsetLeft -
+          container.clientWidth / 2 +
+          element.clientWidth / 2;
+
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: "smooth", // Use smooth for a nice feel
+        });
+      }
+    };
+
+    handleInitialScroll();
   }, []);
   return (
-    <section className="bg-[#020617] text-white py-24 px-6 md:px-20">
+    <section className="bg-[#0a0a0b] text-white py-24 px-6 md:px-20">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -82,7 +95,7 @@ const InvestmentPlans = () => {
           <div
             key={index}
             ref={plan.highlighted ? highlightedRef : null}
-            className={`rounded-2xl p-10 border transition min-w-[85%] md:min-w-0 md:w-1/3 snap-center ${
+            className={`rounded-2xl p-10 border transition min-w-[65%] md:min-w-0 md:w-1/3 snap-center ${
               plan.highlighted
                 ? "bg-[#0f172a] border-teal-500 scale-105 shadow-2xl"
                 : "bg-[#0b1220] border-gray-800 hover:border-teal-500"
@@ -109,17 +122,17 @@ const InvestmentPlans = () => {
                 <li key={i}>• {feature}</li>
               ))}
             </ul>
-              <Link to="/auth?mode=register">
-            <button
-              onClick={() => openAuthModal("login")}
-              className={`w-full py-3 rounded-lg font-semibold transition cursor-pointer ${
-                plan.highlighted
-                  ? "bg-teal-500 hover:bg-teal-600 text-black"
-                  : "border border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-black"
-              }`}
-            >
-              Invest Now
-            </button>
+            <Link to="/auth?mode=register">
+              <button
+                onClick={() => openAuthModal("login")}
+                className={`w-full py-3 rounded-lg font-semibold transition cursor-pointer ${
+                  plan.highlighted
+                    ? "bg-teal-500 hover:bg-teal-600 text-black"
+                    : "border border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-black"
+                }`}
+              >
+                Invest Now
+              </button>
             </Link>
           </div>
         ))}

@@ -62,7 +62,7 @@ const WhyChoose = () => {
             
             <div className="relative rounded-[2.5rem] overflow-hidden border border-white shadow-2xl">
                 <img 
-                    src="YOUR_CLOUDINARY_URL_HERE" 
+                    src="https://res.cloudinary.com/dyjvi61hm/image/upload/v1771404155/jakub-zerdzicki-eGI0aGwuE-A-unsplash_mgw2fv.jpg" 
                     alt="PrestigeX Dashboard Preview" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition duration-700"
                 />

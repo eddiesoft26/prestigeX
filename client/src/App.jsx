@@ -25,6 +25,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsAndConditions from "./components/TermsAndConditions";
 import HelpCenter from "./components/HelpCenter";
+import RealEstatePage from "./pages/RealEstatePage";
+import RealEstatePortal from "./dashboard/pages/RealEstatePortal";
 
 const App = () => {
   return (
@@ -44,6 +46,7 @@ const App = () => {
             <Route path="/bonuses" element={<Bonuses />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/real-estate-page" element={<RealEstatePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/help-center" element={<HelpCenter />} />
@@ -59,6 +62,7 @@ const App = () => {
             <Route path="referrals" element={<Referrals />} />
             <Route path="transactions" element={<Transactions />} />
             <Route path="payment-proof" element={<PaymentProof />} />
+            <Route path="real-estate-portal" element={<RealEstatePortal />} />
           </Route>
            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Route>

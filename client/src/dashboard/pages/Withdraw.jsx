@@ -1,36 +1,43 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+// Change this line in your imports
 import {
   HiOutlineWallet,
   HiCheckCircle,
   HiClock,
   HiXCircle,
+  HiOutlineLockClosed,
+  HiOutlineShieldCheck,
+  // HiOutlineArrowNarrowRight <— This was the culprit
 } from "react-icons/hi2";
+
+// Add this line right below it to get the correct arrow
+import { HiOutlineArrowNarrowRight } from "react-icons/hi";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import api from "../../api/axios";
 
 const Withdraw = () => {
   const [coin, setCoin] = useState("btc");
   const [amount, setAmount] = useState("");
   const [wallet, setWallet] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  // Professional Money Formatter
+  
   const moneyFormatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
   });
 
-  // FETCH BALANCE
-  const { data: wallets, isSummaryLoading } = useQuery({
+  const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
     queryKey: ["summary"],
     queryFn: () => api.get("/dashboard/summary").then((res) => res.data),
-    staleTime: Infinity, // These rarely change, so keep them in cache forever
+    staleTime: Infinity,
   });
 
-  const balance = isSummaryLoading ? 0 : wallets?.withdrawableBalance;
+  const balance = isSummaryLoading ? 0 : summaryData?.withdrawableBalance;
 
-  // Helper to style currency parts
   const renderBalance = (val) => {
     const parts = moneyFormatter.formatToParts(val);
     return (
@@ -40,10 +47,10 @@ const Withdraw = () => {
             key={i}
             className={
               part.type === "currency"
-                ? "text-lg text-gray-500 mr-1"
+                ? "text-xl text-indigo-400 mr-1 font-black"
                 : part.type === "fraction"
-                  ? "text-lg text-white/50"
-                  : "text-3xl font-extrabold text-white"
+                  ? "text-lg text-white/40 font-bold"
+                  : "text-4xl font-black text-white"
             }
           >
             {part.value}
@@ -57,168 +64,174 @@ const Withdraw = () => {
     if (!amount || !wallet) return alert("Please fill in all fields!");
     if (parseFloat(amount) > balance) return alert("Insufficient funds!");
 
-    const walletAddress = wallet
+    setIsSubmitting(true);
     const withdrawalData = {
       coin,
       amount: parseFloat(amount),
-      walletAddress,
+      walletAddress: wallet,
     };
 
     try {
-      // 2. ADD 'await' HERE
       const res = await api.post("/fiat/withdraw", withdrawalData);
-
-      // 3. Axios puts successful data in 'res.data'
       if (res.status === 201 || res.status === 200) {
-        alert("Withdrawal request submitted!");
         setAmount("");
         setWallet("");
         navigate("/dashboard/transactions");
       }
     } catch (err) {
-      // 4. This is where your 400 Error "You must have invested..." lands!
       const errorMessage = err.response?.data?.message || "An error occurred";
       alert(errorMessage);
-      console.log("Detailed Error:", err.response?.data);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 p-4">
-      {/* 1. Glassmorphism Balance Card */}
-      <div className="relative p-6 rounded-3xl bg-linear-to-br from-[#0B0F19] to-blue-950/20 border border-white/10 shadow-2xl overflow-hidden">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
-          Available for Payout
-        </p>
-        {renderBalance(balance)}
-        <div className="mt-4 flex items-center gap-2 text-[10px] text-blue-400 font-bold uppercase tracking-tighter">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
-          Secure Settlement Active
+    <div className="max-w-4xl mx-auto space-y-10 pb-20">
+      {/* Header Area */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
+        <div>
+          <h1 className="text-3xl font-black text-white tracking-tighter italic uppercase">Capital Release</h1>
+          <p className="text-slate-500 text-[10px] font-black tracking-[0.2em] uppercase mt-1">Institutional Liquidity Terminal</p>
+        </div>
+        <div className="flex items-center gap-3 bg-white/2 border border-white/5 px-4 py-2 rounded-xl">
+           <HiOutlineLockClosed className="text-indigo-500" />
+           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">End-to-End Encryption</span>
         </div>
       </div>
 
-      {/* 2. Asset Selector */}
-      <div className="grid grid-cols-2 gap-4">
-        {["btc", "eth"].map((type) => (
-          <button
-            key={type}
-            onClick={() => setCoin(type)}
-            className={`flex items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300 font-bold ${
-              coin === type
-                ? "bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-900/20"
-                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-            }`}
-          >
-            <span className="uppercase">
-              {type === "btc" ? "Bitcoin" : "Ethereum"}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* 3. Inputs Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <input
-            type="number"
-            placeholder="0.00"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full p-5 pt-8 rounded-2xl bg-[#0B0F19] border border-white/10 text-white font-mono text-xl outline-none focus:border-blue-500 transition-colors"
-          />
-          <label className="absolute left-5 top-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-            Amount (USD)
-          </label>
-        </div>
-
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Enter destination address"
-            value={wallet}
-            onChange={(e) => setWallet(e.target.value)}
-            className="w-full p-5 pt-8 rounded-2xl bg-[#0B0F19] border border-white/10 text-white font-medium text-sm outline-none focus:border-blue-500 transition-colors break-all"
-          />
-          <label className="absolute left-5 top-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-            Recipient Wallet Address
-          </label>
-        </div>
-      </div>
-
-      {/* 4. Action Button */}
-      <button
-        onClick={handleSubmit}
-        className="w-full p-5 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-700 text-white font-extrabold uppercase tracking-widest shadow-xl hover:brightness-110 active:scale-[0.98] transition-all"
-      >
-        Request Settlement
-      </button>
-
-      {/* 5. Recent Activity with Pro Badges */}
-      <div className="pt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
-            Recent Activity
-          </h4>
-          <button className="text-[10px] text-blue-400 font-bold uppercase hover:underline">
-            View All
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          {[
-            {
-              coin: "BTC",
-              amount: "500.00",
-              status: "Pending",
-              icon: <HiClock />,
-              color: "text-yellow-400",
-              bg: "bg-yellow-400/10",
-              border: "border-yellow-400/20",
-            },
-            {
-              coin: "ETH",
-              amount: "1,200.00",
-              status: "Completed",
-              icon: <HiCheckCircle />,
-              color: "text-emerald-400",
-              bg: "bg-emerald-400/10",
-              border: "border-emerald-400/20",
-            },
-            {
-              coin: "BTC",
-              amount: "250.00",
-              status: "Rejected",
-              icon: <HiXCircle />,
-              color: "text-red-400",
-              bg: "bg-red-400/10",
-              border: "border-red-400/20",
-            },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="p-4 bg-white/2 rounded-2xl border border-white/5 flex justify-between items-center group hover:bg-white/4 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-white/5 text-gray-400`}>
-                  <HiOutlineWallet size={18} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-white">
-                    {item.coin} Settlement
-                  </p>
-                  <p className="text-[10px] text-gray-500 font-mono">
-                    ${item.amount}
-                  </p>
-                </div>
-              </div>
-              <span
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-bold ${item.color} ${item.bg} ${item.border}`}
-              >
-                {item.icon} {item.status}
-              </span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-4">
+        
+        {/* Left Column: Input Console */}
+        <div className="lg:col-span-7 space-y-8">
+          
+          {/* 1. Glassmorphism Balance Card */}
+          <div className="relative p-8 rounded-[2.5rem] bg-gradient-to-br from-[#0B0F19] to-indigo-950/30 border border-white/10 shadow-2xl overflow-hidden group">
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-[80px] group-hover:bg-indigo-500/20 transition-all duration-700"></div>
+            
+            <div className="flex justify-between items-start mb-4">
+               <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">
+                 Liquidity Available
+               </p>
+               <HiOutlineShieldCheck className="text-indigo-500/50" size={20} />
             </div>
-          ))}
+            
+            {renderBalance(balance)}
+            
+            <div className="mt-6 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Settlement Engine: Ready</span>
+            </div>
+          </div>
+
+          {/* 2. Form Section */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              {["btc", "eth"].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setCoin(type)}
+                  className={`relative p-5 rounded-2xl border font-black uppercase text-xs tracking-widest transition-all duration-500 overflow-hidden ${
+                    coin === type
+                      ? "bg-indigo-600 border-indigo-400 text-white shadow-xl shadow-indigo-600/20 scale-[1.02]"
+                      : "bg-white/2 border-white/5 text-slate-500 hover:bg-white/5"
+                  }`}
+                >
+                  {type === "btc" ? "Bitcoin Network" : "Ethereum Network"}
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <div className="relative group">
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full p-6 pt-10 rounded-[2rem] bg-[#020617] border border-white/5 text-white font-mono text-2xl outline-none focus:border-indigo-500 focus:bg-indigo-500/5 transition-all"
+                />
+                <label className="absolute left-7 top-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                  Extraction Amount (USD)
+                </label>
+              </div>
+
+              <div className="relative group">
+                <input
+                  type="text"
+                  placeholder="Paste destination address"
+                  value={wallet}
+                  onChange={(e) => setWallet(e.target.value)}
+                  className="w-full p-6 pt-10 rounded-[2rem] bg-[#020617] border border-white/5 text-indigo-400 font-mono text-xs outline-none focus:border-indigo-500 focus:bg-indigo-500/5 transition-all break-all"
+                />
+                <label className="absolute left-7 top-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                  Recipient Wallet Address
+                </label>
+              </div>
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full p-6 rounded-[2rem] bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-500 hover:text-white transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+              {isSubmitting ? "Verifying Protocols..." : (
+                <>
+                  Execute Settlement <HiOutlineArrowNarrowRight size={18} />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: Recent Activity Log */}
+        <div className="lg:col-span-5">
+           <div className="bg-slate-900/20 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 space-y-8 h-full">
+              <div className="flex justify-between items-center">
+                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                  Transfer Logs
+                </h4>
+                <button className="text-[9px] text-indigo-400 font-black uppercase tracking-widest hover:text-white transition-colors">
+                  Clear Filter
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { coin: "BTC", amount: "500.00", status: "Pending", icon: <HiClock />, color: "text-amber-400", bg: "bg-amber-400/5", border: "border-amber-400/10" },
+                  { coin: "ETH", amount: "1,200.00", status: "Completed", icon: <HiCheckCircle />, color: "text-emerald-400", bg: "bg-emerald-400/5", border: "border-emerald-400/10" },
+                  { coin: "BTC", amount: "250.00", status: "Rejected", icon: <HiXCircle />, color: "text-red-400", bg: "bg-red-400/5", border: "border-red-400/10" },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="p-5 bg-white/2 rounded-2xl border border-white/5 flex justify-between items-center group hover:border-white/10 transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-xl bg-white/5 text-slate-500 group-hover:text-white transition-colors">
+                        <HiOutlineWallet size={20} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-white tracking-tight uppercase">
+                          {item.coin} Settlement
+                        </p>
+                        <p className="text-[10px] text-slate-500 font-black mt-0.5 tracking-tighter">
+                          ${item.amount}
+                        </p>
+                      </div>
+                    </div>
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest ${item.color} ${item.bg} ${item.border}`}>
+                      {item.icon} {item.status}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl mt-auto">
+                 <p className="text-[9px] text-indigo-300 font-medium leading-relaxed uppercase tracking-tight text-center">
+                    Withdrawals are processed through our secure node network. Please allow up to 24 hours for audit completion.
+                 </p>
+              </div>
+           </div>
         </div>
       </div>
     </div>

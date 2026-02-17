@@ -2,17 +2,21 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "../../api/axios";
 import { useQuery } from "@tanstack/react-query";
-
-//to be fetched from backend
-// const wallets = {
-//   btc: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-//   eth: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-// };
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  HiOutlineShieldCheck, 
+  HiOutlineLightningBolt, 
+  HiOutlineDuplicate, 
+  HiCheck, 
+  HiOutlineCurrencyDollar,
+  HiOutlineInformationCircle
+} from "react-icons/hi";
+import { SiBitcoin, SiEthereum } from "react-icons/si";
 
 const plans = [
-  { id: 1, name: "Starter Plan", min: 100, roi: "20%" },
-  { id: 2, name: "Premium Plan", min: 1000, roi: "35%" },
-  { id: 3, name: "Pro/Ultimate Plan", min: 5000, roi: "50%" },
+  { id: 1, name: "Starter Plan", min: 100, roi: "20%", duration: "24hrs", color: "from-blue-500/20" },
+  { id: 2, name: "Premium Plan", min: 1000, roi: "35%", duration: "48hrs", color: "from-indigo-500/20" },
+  { id: 3, name: "Pro/Ultimate Plan", min: 5000, roi: "50%", duration: "78hrs", color: "from-purple-500/20" },
 ];
 
 const Invest = () => {
@@ -29,17 +33,15 @@ const Invest = () => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     setCopied(true);
-    // Reset the "Copied!" text back to the icon after 2 seconds
     setTimeout(() => setCopied(false), 2000);
   };
 
   const { data: wallets, isLoading } = useQuery({
     queryKey: ["adminWallets"],
     queryFn: () => api.get("/admin-wallets").then((res) => res.data),
-    staleTime: Infinity, // These rarely change, so keep them in cache forever
+    staleTime: Infinity,
   });
 
-  // Step 1: Validate and show the summary
   const handleReview = () => {
     if (!selectedPlan) return alert("Please select a plan!");
     if (Number(amount) < selectedPlan.min) {
@@ -48,16 +50,14 @@ const Invest = () => {
     setIsModalOpen(true);
   };
 
-  // Step 2: The actual API call
   const confirmInvestment = async () => {
     setIsSubmitting(true);
-
     const numAmount = Number(amount);
     const roiDecimal = parseFloat(selectedPlan.roi) / 100;
     const calculatedProfit = numAmount * roiDecimal;
 
     const investmentData = {
-      plan: selectedPlan.name.split(" ")[0].toUpperCase(), // "STARTER", "PREMIUM", "PRO"
+      plan: selectedPlan.name.split(" ")[0].toUpperCase(),
       amount: numAmount,
       roiPercent: parseFloat(selectedPlan.roi),
       profit: calculatedProfit,
@@ -71,7 +71,6 @@ const Invest = () => {
         setIsModalOpen(false);
         setAmount("");
         setSelectedPlan(null);
-        alert("Investment successfully initiated! Proceed to payment.");
         navigate("/dashboard/payment-proof");
       }
     } catch (error) {
@@ -82,178 +81,212 @@ const Invest = () => {
   };
 
   return (
-    <div className="space-y-6 p-4">
-      {/* Coin Selection */}
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          onClick={() => setCoin("btc")}
-          className={`p-4 rounded-xl border font-semibold ${
-            coin === "btc"
-              ? "bg-blue-500 text-white"
-              : "border-white/20 text-gray-200"
-          }`}
-        >
-          Bitcoin
-        </button>
-
-        <button
-          onClick={() => setCoin("eth")}
-          className={`p-4 rounded-xl border font-semibold ${
-            coin === "eth"
-              ? "bg-blue-500 text-white"
-              : "border-white/20 text-gray-200"
-          }`}
-        >
-          Ethereum
-        </button>
+    <div className="max-w-4xl mx-auto space-y-10 pb-20">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-white tracking-tight italic">ASSET DEPLOYMENT</h1>
+          <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Select your strategy & deposit funds</p>
+        </div>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl flex items-center gap-2">
+            <HiOutlineShieldCheck className="text-emerald-500" />
+            <span className="text-[10px] font-black text-emerald-500 uppercase">End-to-End Encrypted</span>
+        </div>
       </div>
 
-      {/* Plan Selection */}
-      <div className="space-y-3">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            onClick={() => setSelectedPlan(plan)}
-            className={`p-4 rounded-xl cursor-pointer border ${
-              selectedPlan?.id === plan.id
-                ? "border-blue-500 bg-white/10"
-                : "border-white/20"
-            }`}
-          >
-            <h4 className="font-semibold">{plan.name}</h4>
-            <p className="text-sm text-gray-400">
-              Minimum: ${plan.min} • ROI: {plan.roi}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Amount */}
-      <input
-        type="number"
-        placeholder="Enter amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none"
-      />
-
-      {/* Submit */}
-      <button
-        onClick={handleReview}
-        className="w-full p-4 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 font-semibold"
-      >
-        Submit Investment
-      </button>
-
-      {/* UI MODAL */}
-
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0B0F19] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
-            <h3 className="text-xl font-bold text-white mb-6">
-              Review Investment
-            </h3>
-
-            <div className="space-y-4 border-b border-white/5 pb-6">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Selected Plan</span>
-                <span className="text-white font-semibold">
-                  {selectedPlan?.name}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Principal Amount</span>
-                <span className="text-white font-mono">
-                  ${Number(amount).toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">ROI ({selectedPlan?.roi})</span>
-                <span className="text-green-400 font-mono">
-                  + $
-                  {(
-                    Number(amount) *
-                    (parseFloat(selectedPlan?.roi) / 100)
-                  ).toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            <div className="py-6 flex justify-between items-center">
-              <span className="text-gray-400 font-bold uppercase tracking-widest text-xs">
-                Total Payout
-              </span>
-              <span className="text-2xl font-extrabold text-white font-mono">
-                $
-                {(
-                  Number(amount) +
-                  Number(amount) * (parseFloat(selectedPlan?.roi) / 100)
-                ).toLocaleString()}
-              </span>
-            </div>
-
-            {/* Wallet Display */}
-            <div className="p-4 mb-4 rounded-xl bg-white/5 border border-white/10 relative group">
-              <p className="text-sm text-gray-400">
-                Send payment to this wallet and confirm.
-              </p>
-
-              <div className="flex items-center justify-between mt-2 gap-2">
-                <p className="break-all font-mono text-sm font-semibold text-blue-400">
-                  {isLoading
-                    ? "Fetching Wallet address..."
-                    : wallets?.[coin] || "Wallet address not found!"}
-                </p>
-
-                {!isLoading && wallets?.[coin] && (
-                  <button
-                    onClick={() => handleCopy(wallets[coin])}
-                    className="shrink-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-                    title="Copy Address"
-                  >
-                    {copied ? (
-                      <span className="text-[10px] font-bold text-green-400 uppercase">
-                        Copied!
-                      </span>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5 0h8.25c.621 0 1.125.504 1.125 1.125v3.375m0 3.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM9.25 10.5h.008v.008H9.25V10.5Z"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column: Form */}
+        <div className="lg:col-span-7 space-y-8">
+          
+          {/* 1. Asset Selection */}
+          <div className="space-y-4">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Step 01. Select Asset</p>
             <div className="grid grid-cols-2 gap-4">
               <button
-                onClick={() => setIsModalOpen(false)}
-                className="p-4 rounded-xl border border-white/10 text-gray-400 font-semibold hover:bg-white/5 transition"
+                onClick={() => setCoin("btc")}
+                className={`group relative p-6 rounded-2xl border transition-all duration-500 overflow-hidden ${
+                  coin === "btc" ? "border-orange-500/50 bg-orange-500/5" : "border-white/5 bg-white/2"
+                }`}
               >
-                Cancel
+                <div className="flex flex-col items-center gap-3 relative z-10">
+                    <SiBitcoin className={`text-3xl ${coin === "btc" ? "text-orange-500" : "text-slate-600"}`} />
+                    <span className={`text-xs font-black uppercase ${coin === "btc" ? "text-white" : "text-slate-500"}`}>Bitcoin</span>
+                </div>
               </button>
+
               <button
-                disabled={isSubmitting}
-                onClick={confirmInvestment}
-                className="p-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition disabled:opacity-50"
+                onClick={() => setCoin("eth")}
+                className={`group relative p-6 rounded-2xl border transition-all duration-500 overflow-hidden ${
+                  coin === "eth" ? "border-blue-500/50 bg-blue-500/5" : "border-white/5 bg-white/2"
+                }`}
               >
-                {isSubmitting ? "Processing..." : "Confirm & Pay"}
+                <div className="flex flex-col items-center gap-3 relative z-10">
+                    <SiEthereum className={`text-3xl ${coin === "eth" ? "text-blue-500" : "text-slate-600"}`} />
+                    <span className={`text-xs font-black uppercase ${coin === "eth" ? "text-white" : "text-slate-500"}`}>Ethereum</span>
+                </div>
               </button>
+            </div>
+          </div>
+
+          {/* 2. Strategy Selection */}
+          <div className="space-y-4">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Step 02. Choose Strategy</p>
+            <div className="space-y-3">
+              {plans.map((plan) => (
+                <div
+                  key={plan.id}
+                  onClick={() => setSelectedPlan(plan)}
+                  className={`group relative p-5 rounded-2xl cursor-pointer border transition-all duration-300 ${
+                    selectedPlan?.id === plan.id
+                      ? "border-indigo-500 bg-indigo-500/5"
+                      : "border-white/5 bg-white/2 hover:border-white/20"
+                  }`}
+                >
+                  <div className="flex justify-between items-center relative z-10">
+                    <div>
+                        <h4 className={`font-black tracking-tight ${selectedPlan?.id === plan.id ? "text-white" : "text-slate-300"}`}>{plan.name}</h4>
+                        <div className="flex gap-4 mt-1">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase">Min: ${plan.min}</span>
+                            <span className="text-[10px] font-bold text-indigo-400 uppercase">ROI: {plan.roi}</span>
+                        </div>
+                    </div>
+                    {selectedPlan?.id === plan.id && <HiCheck className="text-indigo-500 text-2xl" />}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      )}
+
+        {/* Right Column: Execution */}
+        <div className="lg:col-span-5">
+           <div className="sticky top-24 space-y-6">
+                <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 space-y-6">
+                    <div className="space-y-2">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Step 03. Entry Amount</p>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-black">$</span>
+                            <input
+                                type="number"
+                                placeholder="0.00"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                className="w-full pl-10 pr-4 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-xl outline-none focus:border-indigo-500 focus:bg-indigo-500/5 transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Live Calculation Widget */}
+                    {selectedPlan && amount && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-4">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-black text-slate-500 uppercase">Expected Profit</span>
+                                <span className="text-emerald-400 font-black tracking-tighter text-lg">
+                                    +${(Number(amount) * (parseFloat(selectedPlan.roi) / 100)).toLocaleString()}
+                                </span>
+                            </div>
+                            <div className="h-px bg-white/5 w-full"></div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-black text-slate-500 uppercase">Total Settlement</span>
+                                <span className="text-white font-black tracking-tighter text-lg">
+                                    ${(Number(amount) + (Number(amount) * (parseFloat(selectedPlan.roi) / 100))).toLocaleString()}
+                                </span>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    <button
+                        onClick={handleReview}
+                        className="w-full py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-700 text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                        Review Deployment
+                    </button>
+
+                    <p className="text-[9px] text-center text-slate-600 font-bold uppercase tracking-widest px-4">
+                        By proceeding, you agree to the automated smart contract terms for the selected duration.
+                    </p>
+                </div>
+           </div>
+        </div>
+      </div>
+
+      {/* MODAL: Review & Payment (The "Classic" High-End Modal) */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-[#0B0F19] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl overflow-hidden"
+            >
+              {/* Decorative Accent */}
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600"></div>
+
+              <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                      <HiOutlineLightningBolt className="text-indigo-500 text-2xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-white tracking-tight italic uppercase">Execute Investment</h3>
+                    <p className="text-slate-500 text-[10px] font-black tracking-widest uppercase">Transaction Reference: #TX-{Math.floor(Math.random() * 90000)}</p>
+                  </div>
+              </div>
+
+              <div className="space-y-5 bg-white/2 border border-white/5 rounded-3xl p-6">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Strategy</span>
+                  <span className="text-white font-black">{selectedPlan?.name}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Amount</span>
+                  <span className="text-white font-black">${Number(amount).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">ROI</span>
+                  <span className="text-emerald-500 font-black">+{selectedPlan?.roi}</span>
+                </div>
+              </div>
+
+              {/* Wallet Section */}
+              <div className="mt-8 space-y-3">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Payment Address ({coin.toUpperCase()})</label>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-4">
+                  <p className="break-all font-mono text-[11px] font-black text-indigo-400">
+                    {isLoading ? "Synchronizing..." : wallets?.[coin] || "Not Found"}
+                  </p>
+                  <button
+                    onClick={() => handleCopy(wallets?.[coin])}
+                    className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all border border-white/5"
+                  >
+                    {copied ? <HiCheck className="text-emerald-500" /> : <HiOutlineDuplicate />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-10">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="py-4 rounded-2xl border border-white/5 text-slate-500 font-black uppercase tracking-widest text-[10px] hover:bg-white/5 transition"
+                >
+                  Discard
+                </button>
+                <button
+                  disabled={isSubmitting}
+                  onClick={confirmInvestment}
+                  className="py-4 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-indigo-500 hover:text-white transition disabled:opacity-50"
+                >
+                  {isSubmitting ? "Processing..." : "Confirm & Pay"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

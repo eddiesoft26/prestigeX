@@ -12,93 +12,98 @@ import PartnerLogoSlider from "../../components/PartnersLogoSlider";
 
 const features = [
   {
-    icon: <HiOutlineChartBar className="w-10 h-10 text-teal-400" />,
+    icon: <HiOutlineChartBar className="w-8 h-8 text-indigo-600" />,
     title: "Proven Track Record",
-    description:
-      "Our expert team has consistently delivered above-market returns, with a portfolio performance that outpaces traditional investment vehicles. We've helped thousands of investors achieve their financial goals through strategic crypto investments.",
+    description: "Expert team delivering above-market returns consistently.",
   },
   {
-    icon: <HiOutlineShieldCheck className="w-10 h-10 text-teal-400" />,
+    icon: <HiOutlineShieldCheck className="w-8 h-8 text-indigo-600" />,
     title: "Unmatched Security",
-    description:
-      "Your assets are our top priority. We employ military-grade encryption, multi-signature wallets, and cold storage solutions. Our security protocols are regularly audited by leading cybersecurity firms to ensure your investments are always protected.",
+    description: "Military-grade encryption and audited cold storage solutions.",
   },
   {
-    icon: <HiOutlineLightBulb className="w-10 h-10 text-teal-400" />,
+    icon: <HiOutlineLightBulb className="w-8 h-8 text-indigo-600" />,
     title: "Expert Analysis",
-    description:
-      "Our team of crypto analysts and traders work around the clock, leveraging advanced AI and machine learning to identify market opportunities. We combine technical analysis with fundamental research to make informed investment decisions.",
+    description: "AI-driven market insights and 24/7 fundamental research.",
   },
 ];
 
 const stats = [
-  {
-    icon: <HiOutlineGlobe className="w-7 h-7 text-teal-400" />,
-    value: "120+",
-    label: "Countries Served",
-  },
-  {
-    icon: <HiOutlineClock className="w-7 h-7 text-teal-400" />,
-    value: "< 0.5s",
-    label: "Average Execution Time",
-  },
-  {
-    icon: <HiOutlineCurrencyDollar className="w-7 h-7 text-teal-400" />,
-    value: "2M+",
-    label: "Trades Executed",
-  },
-  {
-    icon: <HiOutlineChartBar className="w-7 h-7 text-teal-400" />,
-    value: "250+",
-    label: "Trading Instruments",
-  },
-  {
-    icon: <HiOutlineTrendingUp className="w-7 h-7 text-teal-400" />,
-    value: "Up to 60%",
-    label: "Annual ROI",
-  },
+  { icon: <HiOutlineGlobe className="w-6 h-6 text-indigo-500" />, value: "120+", label: "Countries" },
+  { icon: <HiOutlineClock className="w-6 h-6 text-indigo-500" />, value: "< 0.5s", label: "Execution" },
+  { icon: <HiOutlineCurrencyDollar className="w-6 h-6 text-indigo-500" />, value: "2M+", label: "Trades" },
+  { icon: <HiOutlineChartBar className="w-6 h-6 text-indigo-500" />, value: "250+", label: "Assets" },
+  { icon: <HiOutlineTrendingUp className="w-6 h-6 text-indigo-500" />, value: "60%", label: "Max ROI" },
 ];
 
 const WhyChoose = () => {
   return (
-    <section className="bg-[#0f172a] text-white py-24 px-6 md:px-20">
+    // Sophisticated soft background
+    <section className="bg-[#f8fafc] text-slate-900 py-24 px-6 md:px-20 overflow-hidden">
+      
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4">
-          Why Choose PrestigeX for Your Crypto Investments?
+      <div className="max-w-7xl mx-auto mb-20">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-slate-900">
+          Why Choose PrestigeX?
         </h2>
-        <p className="text-gray-400 text-lg">
+        <p className="text-slate-600 text-lg max-w-2xl leading-relaxed">
           Join the future of digital asset management with a team that's
-          redefining crypto investment excellence.
+          redefining investment excellence through technology.
         </p>
       </div>
 
-      {/* Cards */}
-      <div className="grid md:grid-cols-3 gap-8 mb-20">
-        {features.map((item, index) => (
-          <div
-            key={index}
-            className="bg-[#111827] border border-gray-800 rounded-2xl p-8 hover:border-teal-500 transition"
-          >
-            <div className="mb-4">{item.icon}</div>
-            <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
-            <p className="text-gray-400 leading-relaxed">{item.description}</p>
-          </div>
-        ))}
+      {/* Main Content: Image & Features Toggle */}
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center mb-28">
+        
+        {/* LEFT: Image Container (Responsive: Top on Mobile, Left on Desktop) */}
+        <div className="w-full lg:w-1/2 relative group animate-fadeIn">
+            {/* Decorative Glow behind image */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 to-teal-500/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
+            
+            <div className="relative rounded-[2.5rem] overflow-hidden border border-white shadow-2xl">
+                <img 
+                    src="YOUR_CLOUDINARY_URL_HERE" 
+                    alt="PrestigeX Dashboard Preview" 
+                    className="w-full h-auto object-cover transform hover:scale-105 transition duration-700"
+                />
+            </div>
+        </div>
+
+        {/* RIGHT: Features List */}
+        <div className="w-full lg:w-1/2 flex flex-col gap-6">
+          {features.map((item, index) => (
+            <div
+              key={index}
+              className="bg-white/60 backdrop-blur-md border border-white rounded-3xl p-8 flex items-start gap-6 shadow-xl shadow-slate-200/40 hover:bg-white hover:shadow-indigo-500/5 transition-all duration-300 group"
+            >
+              <div className="shrink-0 p-3 bg-indigo-50 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                {item.icon}
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-slate-900">{item.title}</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
-        {stats.map((stat, index) => (
-          <div key={index} className="flex flex-col items-center gap-3">
-            {stat.icon}
-            <h4 className="text-2xl font-bold text-white">{stat.value}</h4>
-            <p className="text-gray-400 text-sm">{stat.label}</p>
-          </div>
-        ))}
+      {/* Stats - Floating Pill Layout */}
+      <div className="max-w-7xl mx-auto bg-white rounded-[3rem] py-12 px-6 md:px-12 shadow-sm border border-slate-100 mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          {stats.map((stat, index) => (
+            <div key={index} className="flex flex-col items-center text-center gap-3">
+              <div className="text-indigo-500 mb-1">{stat.icon}</div>
+              <h4 className="text-3xl font-extrabold text-slate-900 tracking-tight">{stat.value}</h4>
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
-      <PartnerLogoSlider />
 
+      <div className="max-w-7xl mx-auto">
+        <PartnerLogoSlider />
+      </div>
     </section>
   );
 };

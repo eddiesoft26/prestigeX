@@ -20,7 +20,7 @@ prisma
     process.exit(1);
   });
 
-app.listen(PORT, "0.0.0.0", () => {
-  // Added 0.0.0.0 for Koyeb/Production
+app.listen(PORT, '0.0.0.0', () => {
+  // Added 0.0.0.0 for Rander/Production
   console.log(`Server running on port ${PORT}`);
 });

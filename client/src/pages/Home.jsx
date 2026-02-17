@@ -5,6 +5,8 @@ import Hero from "../sections/home/Hero";
 import HowItWorks from "../sections/home/HowItWorks";
 import InvestmentPlans from "../sections/home/InvestmentPlans";
 import LiveActivityTicker from "../sections/home/LiveActivityTicker";
+import RealEstatePreview from "../sections/home/RealEstatePreview";
+import RealEstateTech from "../sections/home/RealEStateTech";
 import Testimonials from "../sections/home/Testimonials";
 import WhyChoose from "../sections/home/WhyChooseUs";
 
@@ -15,6 +17,8 @@ const Home = () => {
       <WhyChoose />
       <HowItWorks />
       <InvestmentPlans />
+      <RealEstatePreview />
+      <RealEstateTech />
       <Testimonials />
       <LiveActivityTicker />
       <FAQSection />

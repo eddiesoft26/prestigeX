@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
@@ -6,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const { openAuthModal } = useAuth();
-
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,98 +20,87 @@ const Navbar = () => {
   };
 
   const linkStyle = (path) =>
-    `relative flex items-center gap-2 font-medium transition-colors duration-300 ${
+    `relative flex items-center gap-2 font-bold transition-all duration-300 ${
       location.pathname === path
-        ? "text-blue-500 underline decoration-blue-500 decoration-2"
-        : "text-gray-300 hover:text-blue-500"
+        ? "text-indigo-600"
+        : "text-slate-600 hover:text-indigo-600"
     }`;
 
   return (
-    <nav className="fixed top-0 left-0 w-full backdrop-blur-md bg-black/70 z-50 shadow-md">
+    <nav className="fixed top-0 left-0 w-full backdrop-blur-lg bg-white/90 z-[100] border-b border-slate-200/60 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+        <div className="flex justify-between h-20 items-center">
+          
           {/* Logo */}
           <div className="shrink-0">
             <div onClick={handleHomeClick} className="cursor-pointer">
-              <img
-                src="logo.png"
-                alt="prestige-logo"
-                className="w-24 sm:w-32 md:w-40"
-              />
+               {/* Using text logo fallback if logo.png isn't there, looks cleaner for prestige */}
+               <span className="text-2xl font-black tracking-tighter text-slate-900">
+                PRESTIGEX<span className="text-indigo-600">.</span>
+               </span>
             </div>
           </div>
 
           {/* Desktop Menu */}
-          <ul className="hidden md:flex space-x-8 items-center">
-            <li onClick={handleHomeClick} className={linkStyle("/")}>
-              <span className="w-2 h-2 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
+          <ul className="hidden lg:flex space-x-8 items-center">
+            <li onClick={handleHomeClick} className={`cursor-pointer group ${linkStyle("/")}`}>
               Home
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
+              <span className={`absolute left-0 -bottom-1 h-0.5 bg-indigo-600 transition-all duration-300 ${location.pathname === "/" ? "w-full" : "w-0 group-hover:w-full"}`}></span>
             </li>
 
+            {/* REAL ESTATE - The New Star of the Show */}
             <li>
-              <RouterLink to="/plans" className={linkStyle("/plans")}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
-                Investment Plans
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
+              <RouterLink to="/real-estate-page" className={`group ${linkStyle("/real-estate")}`}>
+                <span className="relative">
+                  Real Estate
+                  <span className="absolute -top-3 -right-6 px-1.5 py-0.5 bg-indigo-600 text-[8px] text-white rounded font-black uppercase tracking-tighter animate-pulse">
+                    Hot
+                  </span>
+                </span>
+                <span className={`absolute left-0 -bottom-1 h-0.5 bg-indigo-600 transition-all duration-300 ${location.pathname === "/real-estate" ? "w-full" : "w-0 group-hover:w-full"}`}></span>
               </RouterLink>
             </li>
 
             <li>
-              <RouterLink to="/bonuses" className={linkStyle("/bonuses")}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
-                Bonuses
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
+              <RouterLink to="/plans" className={`group ${linkStyle("/plans")}`}>
+                Investments
+                <span className={`absolute left-0 -bottom-1 h-0.5 bg-indigo-600 transition-all duration-300 ${location.pathname === "/plans" ? "w-full" : "w-0 group-hover:w-full"}`}></span>
               </RouterLink>
             </li>
 
             <li>
-              <RouterLink to="/about" className={linkStyle("/about")}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
+              <RouterLink to="/about" className={`group ${linkStyle("/about")}`}>
                 About Us
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
               </RouterLink>
             </li>
 
             <li>
-              <RouterLink to="/faq" className={linkStyle("/faq")}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
-                FAQ
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
-              </RouterLink>
-            </li>
-
-            <li>
-              <RouterLink to="/contact" className={linkStyle("/contact")}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
-                Contact
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all group-hover:w-full"></span>
+              <RouterLink to="/faq" className={`group ${linkStyle("/faq")}`}>
+                Support
               </RouterLink>
             </li>
 
             {/* Action buttons */}
-            <li>
+            <div className="flex items-center gap-3 ml-4">
               <RouterLink to="/auth?mode=login">
-                <button className="px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300">
-                  Login
+                <button className="px-5 py-2 text-slate-700 font-black hover:text-indigo-600 transition-all text-sm">
+                  Member Login
                 </button>
               </RouterLink>
-            </li>
 
-            <li>
               <RouterLink to="/auth?mode=register">
-                <button className="px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300">
-                  Register
+                <button className="px-7 py-3 bg-slate-900 text-white text-sm font-black rounded-2xl shadow-xl shadow-slate-200 hover:bg-indigo-600 hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all duration-300 uppercase tracking-widest">
+                  Join Now
                 </button>
               </RouterLink>
-            </li>
+            </div>
           </ul>
 
           {/* Mobile Hamburger */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-300 hover:text-blue-500 focus:outline-none transition-colors duration-300"
+              className="text-slate-700 hover:text-indigo-600 focus:outline-none p-2"
             >
               {isOpen ? <HiX size={28} /> : <HiMenu size={28} />}
             </button>
@@ -123,87 +110,29 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-black/90 backdrop-blur-md overflow-hidden">
-          <ul className="flex flex-col px-4 py-6 space-y-2">
-            {/* same animation delays preserved manually */}
-            <li
-              onClick={handleHomeClick}
-              className="px-2 py-3 animate-slide-in"
-              style={{ animationDelay: "0ms" }}
-            >
-              Home
+        <div className="lg:hidden bg-white border-t border-slate-100 shadow-2xl absolute w-full left-0 animate-in fade-in slide-in-from-top-4 duration-300">
+          <ul className="flex flex-col px-8 py-10 space-y-6">
+            <li onClick={handleHomeClick} className="text-xl font-black text-slate-900">Home</li>
+            <li onClick={() => setIsOpen(false)}>
+                <RouterLink to="/real-estate" className="text-xl font-black text-indigo-600 flex items-center gap-2">
+                    Real Estate <span className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded">NEW</span>
+                </RouterLink>
             </li>
-            <li>
-              <RouterLink
-                to="/plans"
-                className="px-2 py-3 animate-slide-in"
-                onClick={() => setIsOpen(false)}
-                style={{ animationDelay: "100ms" }}
-              >
-                Investment Plans
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/bonuses"
-                className="px-2 py-3 animate-slide-in"
-                onClick={() => setIsOpen(false)}
-                style={{ animationDelay: "200ms" }}
-              >
-                Bonuses
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/about"
-                className="px-2 py-3 animate-slide-in"
-                onClick={() => setIsOpen(false)}
-                style={{ animationDelay: "300ms" }}
-              >
-                About Us
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/faq"
-                className="px-2 py-3 animate-slide-in"
-                onClick={() => setIsOpen(false)}
-                style={{ animationDelay: "400ms" }}
-              >
-                FAQ
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/contact"
-                className="px-2 py-3 animate-slide-in"
-                onClick={() => setIsOpen(false)}
-                style={{ animationDelay: "500ms" }}
-              >
-                Contact
-              </RouterLink>
-            </li>
-            <li>
-              <RouterLink
-                to="/auth?mode=login"
-                onClick={() => setIsOpen(false)}
-              >
-                <button className="px-8 py-3 cursor-pointer border border-blue-500 text-blue-500 font-semibold rounded-lg hover:bg-blue-500 hover:text-white transition-all duration-300">
-                  Login
+            <li onClick={() => setIsOpen(false)}><RouterLink to="/plans" className="text-xl font-black text-slate-900">Investment Plans</RouterLink></li>
+            <li onClick={() => setIsOpen(false)}><RouterLink to="/about" className="text-xl font-black text-slate-900">About Our Firm</RouterLink></li>
+            
+            <div className="flex flex-col gap-4 pt-6">
+              <RouterLink to="/auth?mode=login" onClick={() => setIsOpen(false)}>
+                <button className="w-full py-4 border-2 border-slate-100 text-slate-900 font-black rounded-2xl">
+                  Member Login
                 </button>
               </RouterLink>
-            </li>
-
-            <li>
-              <RouterLink
-                to="/auth?mode=register"
-                onClick={() => setIsOpen(false)}
-              >
-                <button className="px-8 py-3 cursor-pointer bg-blue-500 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300">
-                  Register
+              <RouterLink to="/auth?mode=register" onClick={() => setIsOpen(false)}>
+                <button className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg">
+                  Get Started
                 </button>
               </RouterLink>
-            </li>
+            </div>
           </ul>
         </div>
       )}

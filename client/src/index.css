@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Prestige Color Palette */
-  --color-brand-dark: #121214; /* Deep Charcoal */
-  --color-brand-surface: #161618; /* Card Background */
-  --color-brand-accent: #007aff; /* Trust Blue */
-  --color-brand-teal: #2dd4bf; /* Stability Teal */
-  --color-brand-silver: #94a3b8; /* Tech Gray */
-  --color-brand-muted: #26262a; /* Borders */
+/* Primary Backgrounds */
+  --color-brand-bg: #F8FAFC;      /* Main Page BG */
+  --color-brand-surface: #FFFFFF; /* Cards / Modals */
+  
+  /* Brand Identity */
+  --color-brand-accent: #4F46E5;  /* Catchy Indigo - High Trust */
+  --color-brand-teal: #0D9488;    /* Professional Teal */
+  --color-brand-dark: #0F172A;    /* Text / Titles */
+  --color-brand-silver: #64748B;  /* Subtext Gray */
+  --color-brand-muted: #E2E8F0;   /* Borders / Dividers */
 
-  /* Industry Standard Signals */
-  --color-brand-gain: #10b981;
-  --color-brand-loss: #ef4444;
-
+  /* Success/Danger Signals */
+  --color-brand-gain: #059669;    /* Rich Green */
+  --color-brand-loss: #DC2626;    /* Alert Red */
   /* Refined Spacing & Radii */
   --radius-invest: 0.75rem;
 
@@ -25,6 +27,15 @@
 body {
   overflow-x: hidden;
   width: 100%;
+}
+
+/* Add this to your Tailwind classes or CSS to make the scrollbar "always on" or more visible */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3); /* Indigo tint */
+  border-radius: 10px;
 }
 
 @layer base {

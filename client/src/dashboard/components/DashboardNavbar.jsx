@@ -1,83 +1,65 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { HiMenu } from "react-icons/hi";
+import { HiMenu, HiOutlineLogout, HiOutlineBell } from "react-icons/hi";
 
 const DashboardNavbar = ({ setMobileOpen }) => {
-  const navLinks = [
-    { name: "Dashboard", path: "/dashboard", end: true },
-    { name: "Invest", path: "/dashboard/invest" },
-    { name: "Withdraw", path: "/dashboard/withdraw" },
-    { name: "Referrals", path: "/dashboard/referrals" },
-    { name: "Transactions", path: "/dashboard/transactions" },
-    { name: "Payment Proof", path: "/dashboard/payment-proof" }, // Fixed unique path
-  ];
-
   const { user, logout } = useAuth();
 
   const getInitials = (name) => {
-    if (!name) return "??"; // Fallback if name is missing
-
-    // 1. Split by spaces, 2. Filter out extra spaces, 3. Map to first letter
+    if (!name) return "??";
     const parts = name.trim().split(/\s+/);
-
-    if (parts.length === 1) {
-      return parts[0].charAt(0).toUpperCase(); // Just "E" for "Edwin"
-    }
-
-    // Gets first letter of first name and first letter of last name
-    const firstInitial = parts[0].charAt(0);
-    const lastInitial = parts[parts.length - 1].charAt(0);
-
-    return (firstInitial + lastInitial).toUpperCase();
+    return parts.length === 1 
+      ? parts[0].charAt(0).toUpperCase() 
+      : (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   };
 
   return (
-    <header className="w-full h-16 flex items-center justify-between px-6 bg-black/60 backdrop-blur-md border-b border-white/10">
-      {/* Mobile menu button */}
-      <button
-        className="md:hidden text-2xl"
-        onClick={() => setMobileOpen(true)}
-      >
-        <HiMenu />
-      </button>
-
-      <div className="font-bold text-xl">
-        {" "}
-        <img
-          src="logo.png"
-          alt="prestige-logo"
-          width={200}
-          className="max-sm: w-35"
-        />
+    <header className="w-full h-20 flex items-center justify-between px-6 bg-[#020617]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-[100]">
+      {/* Mobile Trigger & Logo */}
+      <div className="flex items-center gap-4">
+        <button
+          className="md:hidden p-2 text-white bg-white/5 rounded-xl"
+          onClick={() => setMobileOpen(true)}
+        >
+          <HiMenu size={24} />
+        </button>
+        <div className="cursor-pointer">
+           <span className="text-xl font-black tracking-tighter text-white">
+            PRESTIGEX<span className="text-indigo-500">.</span>
+           </span>
+        </div>
       </div>
 
-      <nav className="hidden md:flex gap-6 max-lg:gap-3 max-lg: text-xs">
-        {navLinks.map((link) => (
-          <NavLink
-            key={link.name}
-            to={link.path}
-            end={link.end} // This prevents the Dashboard from staying active
-            className={({ isActive }) =>
-              `transition-all duration-300 px-3 py-2 rounded-lg text-sm font-medium ${
-                isActive
-                  ? "text-brand-accent border-b-2 border-brand-accent"
-                  : "text-gray-400 hover:text-white"
-              }`
-            }
-          >
-            {link.name}
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-bold">
-          {getInitials(user?.fullName)}
+      {/* Action Area */}
+      <div className="flex items-center gap-2 sm:gap-6">
+        {/* Global Market Indicator (Desktop) */}
+        <div className="hidden lg:flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/10 px-4 py-2 rounded-full">
+           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+           <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Market Live</span>
         </div>
 
-        <button onClick={logout} className="px-4 py-2 bg-red-500 rounded-lg">
-          Logout
+        <button className="p-2 text-slate-400 hover:text-white transition-colors relative">
+           <HiOutlineBell size={22} />
+           <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full border-2 border-[#020617]"></span>
         </button>
+
+        {/* User Profile Hook */}
+        <div className="flex items-center gap-3 pl-4 border-l border-white/10">
+          <div className="hidden sm:block text-right">
+             <p className="text-xs font-black text-white leading-none">{user?.fullName || "Investor"}</p>
+             <p className="text-[9px] text-indigo-400 font-bold uppercase tracking-tighter mt-1">Institutional Tier</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-600/20 border border-white/10">
+            {getInitials(user?.fullName)}
+          </div>
+          <button 
+            onClick={logout} 
+            className="p-2 text-slate-500 hover:text-red-400 transition-all rounded-lg hover:bg-red-400/5"
+            title="Secure Logout"
+          >
+            <HiOutlineLogout size={20} />
+          </button>
+        </div>
       </div>
     </header>
   );

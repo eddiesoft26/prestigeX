@@ -114,12 +114,15 @@ const Navbar = () => {
           <ul className="flex flex-col px-8 py-10 space-y-6">
             <li onClick={handleHomeClick} className="text-xl font-black text-slate-900">Home</li>
             <li onClick={() => setIsOpen(false)}>
-                <RouterLink to="/real-estate" className="text-xl font-black text-indigo-600 flex items-center gap-2">
+                <RouterLink to="/real-estate-page" className="text-xl font-black text-indigo-600 flex items-center gap-2">
                     Real Estate <span className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded">NEW</span>
                 </RouterLink>
             </li>
             <li onClick={() => setIsOpen(false)}><RouterLink to="/plans" className="text-xl font-black text-slate-900">Investment Plans</RouterLink></li>
             <li onClick={() => setIsOpen(false)}><RouterLink to="/about" className="text-xl font-black text-slate-900">About Our Firm</RouterLink></li>
+            <li onClick={() => setIsOpen(false)}><RouterLink to="/contact" className="text-xl font-black text-slate-900">Contact Us</RouterLink></li>
+            <li onClick={() => setIsOpen(false)}><RouterLink to="/bonuses" className="text-xl font-black text-slate-900">Bonuses</RouterLink></li>
+            <li onClick={() => setIsOpen(false)}><RouterLink to="/faq" className="text-xl font-black text-slate-900">FAQ</RouterLink></li>
             
             <div className="flex flex-col gap-4 pt-6">
               <RouterLink to="/auth?mode=login" onClick={() => setIsOpen(false)}>

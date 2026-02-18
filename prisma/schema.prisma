@@ -16,6 +16,8 @@ model User {
   password        String
   role            Role     @default(USER)
 
+  ip             String?      // Captures user IP
+  country        String?      // Captures user Country
 
   welcomeBonus    Float    @default(20)
   referralBonus   Float    @default(0)
@@ -27,7 +29,6 @@ model User {
 
   investments     Investment[]
   withdrawals     Withdrawal[]
-  deposits        Deposit[]
   transactions    Transaction[]
 
   createdAt       DateTime @default(now())
@@ -50,20 +51,6 @@ model Investment {
 
   startDate   DateTime?
   endDate     DateTime?
-
-  createdAt   DateTime @default(now())
-}
-
-model Deposit {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-
-  amount      Float
-  coin        CoinType
-  proofUrl    String?
-
-  status      Status   @default(PENDING)
 
   createdAt   DateTime @default(now())
 }

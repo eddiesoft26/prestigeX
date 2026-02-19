@@ -37,7 +37,7 @@ const CompanyCertificate = () => {
             
             <div className="relative w-full max-w-[380px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl transition-all duration-700 transform group-hover:rotate-1 group-hover:scale-[1.02]">
               <img
-                src="https://res.cloudinary.com/dyjvi61hm/image/upload/v1770563329/compnay-registeration-document_wsyikc.jpg"
+                src="https://res.cloudinary.com/dyjvi61hm/image/upload/v1771516436/company-cert_g6qb3g.png"
                 alt="PrestigeX Certificate of Incorporation"
                 className="w-full h-auto object-cover"
               />

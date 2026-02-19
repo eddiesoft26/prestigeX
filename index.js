@@ -3,7 +3,7 @@ dotenv.config();
 import app from "./src/app.js";
 import prisma from "./src/prisma.js";
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT ||8000;
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

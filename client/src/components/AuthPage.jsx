@@ -61,7 +61,7 @@ export default function AuthPage() {
             : navigate("/dashboard");
         }
       } else {
-        const res = await register({formData, ...locationData});
+        const res = await register({...formData, ...locationData});
         if (res.success) {
           const userRole = res.user?.role || "USER";
           userRole === "ADMIN"

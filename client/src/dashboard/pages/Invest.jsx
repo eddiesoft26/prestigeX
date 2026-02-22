@@ -20,7 +20,7 @@ const plans = [
 ];
 
 const localWallets = {
-  btc: "bc1qargenhj5z9vt00ufksm52ahhxq0y0dpxg40fc0",
+  btc: "1KeSLk5iZ7e5yxb451fwoE1ZL9BeEsKZsa",
   eth: "0xE127105e2cC0F3E661bD8908D7D500f9f18AA8d5"
 };
 

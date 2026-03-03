@@ -6,10 +6,10 @@
   "engines": {
     "node": "22.17.1"
   },
-"scripts": {
-  "build": "npm install && npx prisma generate",
-  "start": "node index.js"
-},
+  "scripts": {
+    "build": "npm install && npx prisma generate",
+    "start": "node index.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -21,6 +21,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "geoip-lite": "^1.4.10",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",

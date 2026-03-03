@@ -1,28 +1,22 @@
 import {
   HiOutlinePencilAlt,
   HiOutlineMenu, // Use this instead of HiOutlineListBullet
-  HiOutlineCreditCard,
-  HiOutlineBriefcase,
   HiOutlineLogout,
   HiOutlineMail,
   HiOutlineCurrencyDollar,
   HiOutlineUsers,
+  HiBan,
+  HiPlusCircle
 } from "react-icons/hi";
 const AdminSidebar = ({ activeTab, setActiveTab, isOpen, setIsOpen, logout }) => {
   const menuItems = [
       { id: "users", label: "List Users", icon: HiOutlineUsers },
     { id: "create-wallets", label: "Create Wallets", icon: HiOutlinePencilAlt },
-    { id: "trading-plans", label: "List Trading Plans", icon: HiOutlineMenu }, // Fixed
-    { id: "investments", label: "List Investments", icon: HiOutlineMenu }, // Fixed
-    { id: "referrals", label: "List Referrals", icon: HiOutlineMenu },
-    { id: "cards", label: "List Cards", icon: HiOutlineMenu },
-    { id: "investment-plans", label: "Investment Plans", icon: HiOutlineMenu },
-    {
-      id: "payment-wallets",
-      label: "List Payment Wallets",
-      icon: HiOutlineMenu,
-    },
+    { id: "list-wallets", label: "List Wallets", icon: HiOutlinePencilAlt },
+    { id: "investments", label: "List Investments", icon: HiOutlineMenu }, 
     { id: "withdrawals", label: "Withdrawals", icon: HiOutlineCurrencyDollar },
+    { id: "top-up", label: "Top Up", icon: HiPlusCircle },
+    { id: "blacklist", label: "BlackList", icon: HiBan },
     { id: "send-email", label: "Send Email", icon: HiOutlineMail },
   ];
 

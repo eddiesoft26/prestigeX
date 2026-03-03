@@ -52,7 +52,7 @@ const DashboardLayout = () => {
               </span>
           </div>
           <div className="text-[10px] font-black text-slate-600 uppercase tracking-tighter italic">
-              PrestigeX Quantum Security Layer v4.0
+              GALAXY DIGITAL Quantum Security Layer v4.0
           </div>
       </footer>
     </div>

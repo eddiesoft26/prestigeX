@@ -19,7 +19,7 @@ const PrivacyPolicy = () => {
               <h2 className="text-xl font-semibold text-gray-800">Overview</h2>
             </div>
             <p>
-              At <span className="font-semibold text-blue-600">PrestigeX</span>, we are committed to protecting your personal and financial data. 
+              At <span className="font-semibold text-blue-600">GALAXY DIGITAL</span>, we are committed to protecting your personal and financial data. 
               This policy explains how we collect, use, and safeguard your information within our investment ecosystem.
             </p>
           </section>
@@ -71,14 +71,14 @@ const PrivacyPolicy = () => {
             </div>
             <p className="text-gray-300 text-sm">
               We utilize SSL encryption and secure database architectures to ensure your data remains private. 
-              PrestigeX does not share, rent, or sell user data to any third-party marketing agencies.
+            GALAXY DIGITALdoes not share, rent, or sell user data to any third-party marketing agencies.
             </p>
           </section>
         </div>
 
         {/* Footer Note */}
         <div className="mt-12 pt-8 border-t border-gray-100 text-center text-gray-400 text-xs">
-          © 2026 PrestigeX Investment Platform. All rights reserved.
+          © 2026 GALAXY DIGITAL Investment Platform. All rights reserved.
         </div>
       </div>
     </div>

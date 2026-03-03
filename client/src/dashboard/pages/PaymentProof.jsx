@@ -1,15 +1,17 @@
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Added useRef
 import api from "../../api/axios";
-import { HiCloudUpload } from "react-icons/hi"; // Ensure this is imported
+import { HiCloudUpload } from "react-icons/hi";
+import toast, { Toaster } from "react-hot-toast"; // Added toast
 
 const PaymentProof = () => {
   const [searchParams] = useSearchParams();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [reference, setReference] = useState(""); // Added missing state
+  const [reference, setReference] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const topRef = useRef(null); // Reference for scrolling
 
   const investmentIdFromUrl = searchParams.get("id");
 
@@ -25,48 +27,48 @@ const PaymentProof = () => {
       ? latestInvestments[0]?.id
       : latestInvestments?.id);
 
-  console.log("Current Target ID:", targetId);
+  // Helper to ensure user sees notifications on mobile
+  const scrollToTop = () => {
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
     if (selectedFile) {
-      // 1. CLEAN UP: If there's already a preview, revoke its URL
       if (preview) {
         URL.revokeObjectURL(preview);
       }
-
       setFile(selectedFile);
-
-      // 2. CREATE NEW: Create the new local URL
       const newPreviewUrl = URL.createObjectURL(selectedFile);
       setPreview(newPreviewUrl);
+      toast.success("Image selected successfully!"); // Added feedback
     }
   };
 
-  // 3. COMPONENT UNMOUNT: Cleanup when the user leaves the page
   useEffect(() => {
-    // This return function runs when the component is destroyed
     return () => {
       if (preview) {
         URL.revokeObjectURL(preview);
       }
     };
-  }, [preview]); // Only re-run if preview changes
+  }, [preview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) return alert("Please select a file first!");
-    if (!targetId) return alert("No active investment found.");
+
+    if (!file) {
+      scrollToTop();
+      return toast.error("Please select a file first!"); // Replaced alert
+    }
+    if (!targetId) {
+      scrollToTop();
+      return toast.error("No active investment found."); // Replaced alert
+    }
 
     setIsUploading(true);
     const formData = new FormData();
-
-    // 1. 'image' matches upload.single('image') in backend
     formData.append("image", file);
-    // 2. Pass the ID so the backend knows which record to update
     formData.append("reference", targetId);
-    // 3. Optional: manually entered hash
     formData.append("transactionHash", reference);
 
     try {
@@ -75,30 +77,55 @@ const PaymentProof = () => {
       });
 
       if (res.status === 200) {
-        alert("Proof submitted! Admin will verify your payment.");
+        scrollToTop();
+        toast.success("Proof submitted! Admin will verify your payment."); // Replaced alert
         setFile(null);
         setPreview(null);
         setReference("");
       }
     } catch (err) {
-      // To this (for debugging):
       console.error("Full Error:", err);
-      alert(
-        err.response?.data?.message ||
-          err.message ||
-          "Check console for details",
-      );
+      scrollToTop();
+      toast.error(
+        err.response?.data?.message || err.message || "Upload failed.",
+      ); // Replaced alert
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-8">
-      {/* ... Your Target ID Alert ... */}
+    <div ref={topRef} className="max-w-3xl mx-auto p-4 space-y-8">
+      {/* 1. Global Toaster with Galaxy Theme */}
+      <Toaster
+        position="top-right"
+        containerStyle={{
+          top: 90,
+        }}
+        toastOptions={{
+          style: {
+            background: "#0F172A",
+            color: "#fff",
+            border: "1px solid rgba(255,255,255,0.1)",
+            fontSize: "12px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+          },
+          success: { iconTheme: { primary: "#10B981", secondary: "#fff" } },
+          error: { iconTheme: { primary: "#EF4444", secondary: "#fff" } },
+        }}
+      />
+
+      <div className="text-left">
+        <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter">
+          Submit Proof
+        </h1>
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">
+          Upload your transaction receipt for verification
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Drag & Drop Upload Zone */}
         <div className="relative">
           <label className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] ml-1">
             Upload Receipt
@@ -146,19 +173,18 @@ const PaymentProof = () => {
           </div>
         </div>
 
-        {/* ✅ THE DESIGNED BUTTON */}
         <button
           type="submit"
           disabled={isUploading || isLoading || !file}
           className={`
-      w-full mt-4 p-5 rounded-2xl font-extrabold uppercase tracking-[0.15em] text-sm
-      transition-all duration-300 transform active:scale-[0.98]
-      ${
-        isUploading || isLoading || !file
-          ? "bg-white/5 text-gray-500 cursor-not-allowed border border-white/5"
-          : "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_15px_30px_-5px_rgba(59,130,246,0.5)] hover:-translate-y-1"
-      }
-    `}
+            w-full mt-4 p-5 rounded-2xl font-extrabold uppercase tracking-[0.15em] text-sm
+            transition-all duration-300 transform active:scale-[0.98]
+            ${
+              isUploading || isLoading || !file
+                ? "bg-white/5 text-gray-500 cursor-not-allowed border border-white/5"
+                : "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_15px_30px_-5px_rgba(59,130,246,0.5)] hover:-translate-y-1"
+            }
+          `}
         >
           {isUploading ? (
             <span className="flex items-center justify-center gap-2">

@@ -22,7 +22,7 @@ const Transactions = () => {
     );
 
   return (
-    <div className="p-6 space-y-8 max-w-6xl mx-auto w-full">
+    <div className="p-4 md:p-6 space-y-8 max-w-6xl mx-auto w-full">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -41,8 +41,8 @@ const Transactions = () => {
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="w-full overflow-hidden rounded-[2rem] border border-white/5 bg-[#0B0F19]/50 backdrop-blur-xl shadow-2xl">
+      {/* --- DESKTOP VIEW: Hidden on Mobile --- */}
+      <div className="hidden md:block w-full overflow-hidden rounded-[2rem] border border-white/5 bg-[#0B0F19]/50 backdrop-blur-xl shadow-2xl">
         <div className="w-full overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -56,65 +56,33 @@ const Transactions = () => {
             </thead>
             <tbody className="divide-y divide-white/[0.02]">
               {transactions?.map((tx) => (
-                <tr
-                  key={tx.id}
-                  className="hover:bg-indigo-500/[0.02] transition-colors group"
-                >
-                  {/* Type Column */}
+                <tr key={tx.id} className="hover:bg-indigo-500/[0.02] transition-colors group">
                   <td className="p-6 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg border ${
-                        tx.type === "INVESTMENT" 
-                        ? "bg-blue-500/10 border-blue-500/20 text-blue-400" 
-                        : "bg-purple-500/10 border-purple-500/20 text-purple-400"
-                      }`}>
+                      <div className={`p-2 rounded-lg border ${tx.type === "INVESTMENT" ? "bg-blue-500/10 border-blue-500/20 text-blue-400" : "bg-purple-500/10 border-purple-500/20 text-purple-400"}`}>
                         {tx.type === "INVESTMENT" ? <HiOutlineArrowDownLeft size={14}/> : <HiOutlineArrowUpRight size={14}/>}
                       </div>
-                      <span className="text-[10px] font-black text-white uppercase tracking-wider">
-                        {tx.type}
-                      </span>
+                      <span className="text-[10px] font-black text-white uppercase tracking-wider">{tx.type}</span>
                     </div>
                   </td>
-
-                  {/* Plan/Asset */}
                   <td className="p-6">
                     <div className="flex flex-col">
                         <span className="text-xs font-bold text-slate-300 whitespace-nowrap">{tx.plan || "Market Asset"}</span>
                         <span className="text-[9px] font-medium text-slate-600 uppercase tracking-tighter">REF: {tx.id?.slice(-8).toUpperCase() || "N/A"}</span>
                     </div>
                   </td>
-
-                  {/* Amount */}
                   <td className="p-6 whitespace-nowrap">
-                    <span className="text-sm font-black text-white font-mono tracking-tighter">
-                      {moneyFormatter.format(tx.amount)}
-                    </span>
+                    <span className="text-sm font-black text-white font-mono tracking-tighter">{moneyFormatter.format(tx.amount)}</span>
                   </td>
-
-                  {/* Status */}
                   <td className="p-6">
-                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${
-                      tx.status === "Completed" ? "text-emerald-400 border-emerald-400/20 bg-emerald-400/5" :
-                      tx.status === "Pending" ? "text-amber-400 border-amber-400/20 bg-amber-400/5" :
-                      "text-red-400 border-red-400/20 bg-red-400/5"
-                    }`}>
-                      <div className={`w-1 h-1 rounded-full ${
-                        tx.status === "Completed" ? "bg-emerald-400 shadow-[0_0_5px_#10b981]" :
-                        tx.status === "Pending" ? "bg-amber-400 shadow-[0_0_5px_#f59e0b]" :
-                        "bg-red-400 shadow-[0_0_5px_#ef4444]"
-                      }`} />
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${tx.status === "Completed" ? "text-emerald-400 border-emerald-400/20 bg-emerald-400/5" : tx.status === "Pending" ? "text-amber-400 border-amber-400/20 bg-amber-400/5" : "text-red-400 border-red-400/20 bg-red-400/5"}`}>
+                      <div className={`w-1 h-1 rounded-full ${tx.status === "Completed" ? "bg-emerald-400 shadow-[0_0_5px_#10b981]" : tx.status === "Pending" ? "bg-amber-400 shadow-[0_0_5px_#f59e0b]" : "bg-red-400 shadow-[0_0_5px_#ef4444]"}`} />
                       {tx.status}
                     </div>
                   </td>
-
-                  {/* Date */}
                   <td className="p-6 text-right whitespace-nowrap">
                     <span className="text-[10px] text-slate-500 font-bold font-mono">
-                      {new Date(tx.date).toLocaleDateString("en-GB", {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric'
-                      })}
+                      {new Date(tx.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                   </td>
                 </tr>
@@ -122,6 +90,48 @@ const Transactions = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* --- MOBILE VIEW: Hidden on Desktop --- */}
+      <div className="md:hidden space-y-4">
+        {transactions?.map((tx) => (
+          <div key={tx.id} className="bg-[#0B0F19]/50 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {/* Icon Circle */}
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${
+                tx.type === "INVESTMENT" 
+                ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" 
+                : "bg-purple-500/10 border-purple-500/20 text-purple-400"
+              }`}>
+                {tx.type === "INVESTMENT" ? <HiOutlineArrowDownLeft size={18}/> : <HiOutlineArrowUpRight size={18}/>}
+              </div>
+
+              {/* Center Info */}
+              <div className="flex flex-col">
+                <span className="text-[13px] font-black text-white uppercase tracking-tight">
+                  {tx.type === "INVESTMENT" ? (tx.investmentType?.replace('_', ' ') || "ASSET DEPLOYMENT") : "FUNDS WITHDRAWAL"}
+                </span>
+                <span className="text-[11px] font-bold text-slate-500">
+                  {tx.plan && tx.plan !== "-" ? tx.plan : "Market Asset"} • {new Date(tx.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short' })}
+                </span>
+              </div>
+            </div>
+
+            {/* Right Side Info */}
+            <div className="flex flex-col items-end gap-1">
+              <span className={`text-[14px] font-black font-mono ${tx.type === "INVESTMENT" ? "text-emerald-400" : "text-white"}`}>
+                {tx.type === "INVESTMENT" ? "+" : "-"}{moneyFormatter.format(tx.amount)}
+              </span>
+              <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded border ${
+                tx.status === "Completed" ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" :
+                tx.status === "Pending" ? "text-amber-500 border-amber-500/20 bg-amber-500/5" :
+                "text-red-500 border-red-500/20 bg-red-500/5"
+              }`}>
+                {tx.status}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {transactions?.length === 0 && (

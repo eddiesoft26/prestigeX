@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
+
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Loader2, Eye, EyeOff, ShieldCheck, Lock } from "lucide-react";
@@ -36,23 +38,10 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      let locationData = { ip: "", country: "" };
-      try {
-        // We use a free service to get the IP and Country Name
-        const geoRes = await fetch("https://ipapi.co/json/");
-        const geoData = await geoRes.json();
-        locationData = {
-          ip: geoData.ip,
-          country: geoData.country_name, // e.g., "Nigeria" or "United States"
-        };
-      } catch (err) {
-        console.error("Geo lookup failed, proceeding without it.");
-      }
       if (mode === "login") {
         const res = await login({
           email: formData.email,
           password: formData.password,
-          ...locationData
         });
         if (res.success) {
           const userRole = res.user?.role || "USER";
@@ -61,7 +50,7 @@ export default function AuthPage() {
             : navigate("/dashboard");
         }
       } else {
-        const res = await register({...formData, ...locationData});
+        const res = await register({ ...formData, ...locationData });
         if (res.success) {
           const userRole = res.user?.role || "USER";
           userRole === "ADMIN"
@@ -70,7 +59,12 @@ export default function AuthPage() {
         }
       }
     } catch (error) {
-      console.error("Auth Error:", error);
+      if (error.response?.status === 429) {
+        const errorMessage = error.response.data.message;
+        toast.error(errorMessage);
+      } else {
+        toast.error(error.response?.data?.message || "Login failed");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +72,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#020617] px-4 py-10 relative overflow-hidden">
+      <Toaster position="top-right" reverseOrder={false} />
       {/* Background Decorative Glows */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2"></div>
@@ -90,7 +85,7 @@ export default function AuthPage() {
               to="/"
               className="text-2xl font-black tracking-tighter text-indigo-600 mb-8 block"
             >
-              PRESTIGEX<span className="text-slate-900">.</span>
+              GALAXY DIGITAL<span className="text-slate-900">.</span>
             </Link>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
               {mode === "login" ? "Welcome Back" : "Start Your Journey"}

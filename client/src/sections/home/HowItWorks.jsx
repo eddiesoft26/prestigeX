@@ -34,7 +34,7 @@ const HowItWorks = () => {
     <section className="bg-[#f1f5f9] text-slate-900 py-24 px-6 md:px-20 relative overflow-hidden">
       
       {/* Background Decoration: Sophisticated Radial Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-100/40 via-transparent to-transparent pointer-events-none"></div>
+      {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-100/40 via-transparent to-transparent pointer-events-none"></div> */}
 
       {/* Header */}
       <div className="relative z-10 text-center max-w-3xl mx-auto mb-20">
@@ -42,10 +42,10 @@ const HowItWorks = () => {
             The Process
         </span>
         <h2 className="text-4xl md:text-5xl font-bold mt-6 mb-6 tracking-tight">
-          How PrestigeX Works
+          How Galaxy Digital Works
         </h2>
         <p className="text-slate-600 text-lg">
-          Start investing in digital assets in just a few simple, secure steps.
+          Start investing in cryptocurrency in just a few simple, secure steps.
         </p>
       </div>
 

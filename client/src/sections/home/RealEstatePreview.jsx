@@ -12,7 +12,7 @@ const RealEstatePreview = () => {
           <div className="max-w-2xl">
             <span className="text-indigo-600 font-black uppercase tracking-[0.3em] text-xs">Tangible Wealth</span>
             <h2 className="text-slate-900 text-4xl md:text-6xl font-black mt-4 tracking-tight leading-[0.9]">
-              Real Estate <br /><span className="text-slate-400">Reimagined.</span>
+              Galaxy Real Estate <br /><span className="text-slate-400">Portfolio.</span>
             </h2>
           </div>
           <Link to="/real-estate-page" className="group flex items-center gap-4 bg-slate-900 text-white px-8 py-5 rounded-2xl font-black transition-all hover:bg-indigo-600">

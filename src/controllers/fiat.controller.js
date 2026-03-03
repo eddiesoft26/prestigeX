@@ -1,7 +1,7 @@
 import prisma from "../prisma.js";
 
 export const createInvestment = async (req, res) => {
-  const { amount, plan, roiPercent, profit, totalPayout } = req.body;
+  const { amount, plan, roiPercent, profit, totalPayout, investmentType } = req.body;
 
   try {
     const investment = await prisma.investment.create({
@@ -12,12 +12,14 @@ export const createInvestment = async (req, res) => {
         roiPercent: parseFloat(roiPercent),
         profit,
         totalPayout, // ✅ Save the pre-calculated value
+        investmentType,
       },
     });
 
     res.status(201).json(investment);
   } catch (error) {
-    res.status(500).json({ message: "Failed to create investment" });
+    console.error("Prisma Error:", error);
+    res.status(500).json({ message: error.message || "Failed to create investment" });
   }
 };
 
@@ -98,6 +100,7 @@ export const getTransactions = async (req, res) => {
         plan: true,
         amount: true,
         status: true,
+        investmentType: true,
         createdAt: true,
       },
     });
@@ -118,6 +121,7 @@ export const getTransactions = async (req, res) => {
     const formattedInvestments = investments.map((inv) => ({
       id: inv.id,
       type: "INVESTMENT",
+      investmentType: inv.investmentType,
       plan: inv.plan,
       amount: inv.amount,
       status:
@@ -151,6 +155,7 @@ export const getTransactions = async (req, res) => {
 
     res.status(200).json(allTransactions);
   } catch (error) {
+    console.error('transaction error:', error);
     res.status(500).json({ message: "Failed to fetch transactions" });
   }
 };

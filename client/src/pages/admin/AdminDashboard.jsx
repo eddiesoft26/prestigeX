@@ -6,6 +6,9 @@ import CreateWallet from "./pages/CreateWallet";
 import ListInvestments from "./pages/ListInvestments";
 import ListWithdrawals from "./pages/ListWithdrawals";
 import ListUsers from "./pages/ListUsers";
+import TopUp from "./pages/TopUp";
+import Blacklist from "./pages/BlackList";
+import WalletDirectory from "./pages/ListWallets";
 
 const AdminLayout = () => {
   // 1. These are the "missing" variables
@@ -32,9 +35,12 @@ const AdminLayout = () => {
         <main className="p-6">
           {/* content based on activeTab */}
           {activeTab === "create-wallets" && <CreateWallet />}
+          {activeTab === "list-wallets" && <WalletDirectory /> }
           {activeTab === "users" && <ListUsers />}
           {activeTab === "investments" && <ListInvestments />}
           {activeTab === "withdrawals" && <ListWithdrawals />}  
+          {activeTab === "top-up" && <TopUp />}  
+          {activeTab === "blacklist" && <Blacklist />}  
         </main>
       </div>
     </div>

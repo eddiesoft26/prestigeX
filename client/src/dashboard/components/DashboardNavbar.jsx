@@ -25,7 +25,7 @@ const DashboardNavbar = ({ setMobileOpen }) => {
         </button>
         <div className="cursor-pointer">
            <span className="text-xl font-black tracking-tighter text-white">
-            PRESTIGEX<span className="text-indigo-500">.</span>
+            GALAXY<span className="text-indigo-500">.</span>
            </span>
         </div>
       </div>

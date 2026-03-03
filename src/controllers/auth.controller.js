@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import geoip from 'geoip-lite';
 import { PrismaClient } from "@prisma/client";
 import { generateReferralCode } from "../utils/generateReferralCode.js";
 
@@ -9,6 +10,10 @@ export const register = async (req, res) => {
   try {
     //REFERRAL CODE TO BE GOTTEN FROM THE FRONT END THROUGH THE PARAMS AND SENT TOGETHER IN THE BODY.
     const { fullName, email, password, referralCode } = req.body;
+
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    const geo = geoip.lookup(ip);
+    const country = geo ? geo.country : "Unknown"
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -31,6 +36,8 @@ export const register = async (req, res) => {
       data: {
         fullName,
         email,
+        ip,
+        country,
         password: hashedPassword,
         referralCode: generateReferralCode(),
         referredById: referrer ? referrer.id : null,

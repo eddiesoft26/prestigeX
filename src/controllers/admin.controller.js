@@ -1,14 +1,14 @@
 import prisma from "../prisma.js";
 
 export const approveWithdrawal = async (req, res) => {
-  const { withdrawalId } = req.params;
+  const { Id } = req.params;
 
   try {
     // 1. Start the Transaction "Bubble"
     const result = await prisma.$transaction(async (tx) => {
       // 2. Find the withdrawal first to get the userId and amount
       const withdrawal = await tx.withdrawal.findUnique({
-        where: { id: withdrawalId },
+        where: { id: Id },
       });
 
       if (!withdrawal) {
@@ -21,7 +21,7 @@ export const approveWithdrawal = async (req, res) => {
 
       // 3. Update the Withdrawal status to APPROVED
       const updatedWithdrawal = await tx.withdrawal.update({
-        where: { id: withdrawalId },
+        where: { id: Id },
         data: { status: "APPROVED" },
       });
 
@@ -64,6 +64,13 @@ export const approveWithdrawal = async (req, res) => {
 // Add / update wallet address
 export const upsertWallet = async (req, res) => {
   const { coin, address } = req.body;
+  
+
+  if (!coin || !address) {
+    return res
+      .status(400)
+      .json({ message: "Coin name and address are required" });
+  }
 
   try {
     const wallet = await prisma.AdminWallet.upsert({
@@ -81,10 +88,14 @@ export const upsertWallet = async (req, res) => {
 // Get wallet addresses
 export const getWallets = async (req, res) => {
   try {
-    const wallets = await prisma.wallet.findMany();
+    const wallets = await prisma.AdminWallet.findMany();
     res.json(wallets);
-  } catch {
-    res.status(500).json({ message: "Failed to fetch wallets" });
+  } catch (error){
+    console.error("PRISMA FETCH ERROR:", error);
+    res.status(500).json({
+      message: "Database Sync Error",
+      details: error.message,
+    });
   }
 };
 
@@ -92,6 +103,7 @@ export const listPendingInvestments = async (req, res) => {
   try {
     const investments = await prisma.investment.findMany({
       where: { status: "PENDING" },
+      take: 50,
       include: { user: true }, // show user info
     });
     res.json(investments);
@@ -104,6 +116,7 @@ export const listPendingWithdrawals = async (req, res) => {
   try {
     const withdrawals = await prisma.withdrawal.findMany({
       where: { status: "PENDING" },
+      take: 50,
       include: { user: true },
     });
     res.json(withdrawals);
@@ -115,28 +128,77 @@ export const listPendingWithdrawals = async (req, res) => {
 export const listUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
       select: {
         id: true,
         fullName: true,
         email: true,
-        investedAmount: true,
+        ip: true,
+        country: true,
         welcomeBonus: true,
         referralBonus: true,
-        _count: {
-          select: { referrals: true },
-        },
         createdAt: true,
-      },
-      orderBy: {
-        createdAt: "desc",
+        investments: {
+          where: { status: "APPROVED" },
+          select: {
+            amount: true,
+            investmentType: true,
+            profit: true,
+          },
+        },
+        withdrawals: {
+          where: { status: "APPROVED" },
+          select: {
+            amount: true,
+          },
+        },
       },
     });
-    res.json(users);
-  } catch {
+
+    const usersWithAssets = users.map((user) => {
+      // 1. Safely sum investments (Ensure we handle null/undefined)
+      const totalInvested =
+        user.investments?.reduce(
+          (acc, inv) => acc + Number(inv.amount || 0),
+          0,
+        ) || 0;
+      const totalProfit =
+        user.investments?.reduce(
+          (acc, inv) => acc + Number(inv.profit || 0),
+          0,
+        ) || 0;
+
+      // 2. Safely sum withdrawals
+      const totalWithdrawn =
+        user.withdrawals?.reduce((acc, w) => acc + Number(w.amount || 0), 0) ||
+        0;
+
+      // 3. Cast bonuses to numbers
+      const welcome = Number(user.welcomeBonus || 0);
+      const referral = Number(user.referralBonus || 0);
+
+      // 4. Final Calculation
+      const totalAssets =
+        totalInvested + totalProfit + welcome + referral - totalWithdrawn;
+
+      return {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        ip: user.ip || "N/A",
+        country: user.country || "Unknown",
+        createdAt: user.createdAt,
+        // Using parseFloat to ensure we return a clean number
+        totalAssets: Number(totalAssets.toFixed(2)),
+      };
+    });
+
+    res.json(usersWithAssets);
+  } catch (error) {
+    console.error("LIST_USERS_ERROR:", error);
     res.status(500).json({ message: "Failed to fetch users" });
   }
 };
-
 export const rejectWithdrawal = async (req, res) => {
   const { withdrawalId } = req.params;
   const { reason } = req.body; // Admin sends the reason from the frontend
@@ -182,5 +244,78 @@ export const rejectWithdrawal = async (req, res) => {
     res.json({ message: "Withdrawal rejected", data: result });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+export const topUpUser = async (req, res) => {
+  const { userId, amount, planName, investmentType } = req.body;
+
+  try {
+    const topUp = await prisma.investment.create({
+      data: {
+        userId,
+        amount: parseFloat(amount),
+        plan: planName || "STARTER",
+        status: "APPROVED", // Auto-approved so it reflects in assets immediately
+        profit: 0,
+        roiPercent: 0,
+        totalPayout: parseFloat(amount),
+        investmentType: investmentType, //remember to implement from ui before sending
+        proofUrl: "SYSTEM_GENERATED",
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Funds added successfully",
+      data: topUp,
+    });
+  } catch (error) {
+    console.error("TOPUP ERROR:", error);
+    res.status(500).json({ message: "Failed to process top-up" });
+  }
+};
+
+// 1. Get all blocked IPs
+export const getBlacklist = async (req, res) => {
+  try {
+    const list = await prisma.blacklist.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(list);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch blacklist" });
+  }
+};
+
+export const addToBlacklist = async (req, res) => {
+  const { ip, reason } = req.body;
+  if (!ip) return res.status(400).json({ message: "IP is required" });
+
+  try {
+    const existing = await prisma.blacklist.findUnique({ where: { ip } });
+    if (existing)
+      return res.status(400).json({ message: "This IP is already blocked" });
+
+    await prisma.blacklist.create({
+      data: { ip, reason: reason || "Manual block" },
+    });
+    res.status(201).json({ message: "IP blocked" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Database error" });
+  }
+};
+
+// 2. Remove an IP from blacklist
+export const unblockIP = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.blacklist.delete({
+      where: { id },
+    });
+    res.json({ message: "IP address unblocked" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to unblock IP" });
   }
 };

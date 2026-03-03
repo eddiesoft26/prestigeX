@@ -43,7 +43,7 @@ const DashboardCards = () => {
               part.type === "currency"
                 ? "text-[8px] md:text-base font-medium text-gray-500 mr-0.5" 
                 : part.type === "fraction"
-                  ? "hidden md:inline-block text-lg font-bold text-white/60" // Hide cents on mobile to save space
+                  ? "text-[10px] md:inline-block text-lg font-bold text-white/60" // Hide cents on mobile to save space
                   : `${sizeClass} font-extrabold text-white` 
             }
           >
@@ -87,7 +87,7 @@ const DashboardCards = () => {
         </h4>
         {renderFormattedBalance(data?.welcomeBonus, "text-lg md:text-2xl")}
         <p className="text-[6px] md:text-[10px] text-indigo-400 mt-1 font-medium italic truncate">
-          First Dep.
+          Welcome Bonus
         </p>
       </div>
 
@@ -95,7 +95,7 @@ const DashboardCards = () => {
       <div className="relative p-3 md:p-6 border rounded-xl md:rounded-2xl border-white/10 shadow-xl bg-[#0B0F19] overflow-hidden">
         <div className="flex justify-between items-center mb-1 md:mb-4">
           <h4 className="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">
-            Network
+            Referrals
           </h4>
           <HiUsers className="text-emerald-500/60 text-xs md:text-2xl" />
         </div>
@@ -103,7 +103,7 @@ const DashboardCards = () => {
           <div className="md:border-r border-white/5 pr-2">
             {renderFormattedBalance(data?.referralBonus, "text-base md:text-xl")}
           </div>
-          <div className="hidden md:block">
+          <div className=" md:block">
             <p className="text-xl font-extrabold text-white font-mono">
               {data?.referralsCount ?? 0}
             </p>

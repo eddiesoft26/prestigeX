@@ -3,7 +3,7 @@ import { HiOutlineDownload, HiOutlineBadgeCheck, HiOutlineShieldCheck } from "re
 
 const CompanyCertificate = () => {
   // Keeping your logic intact
-  const certificateUrl = "https://res.cloudinary.com/<your-cloud-name>/image/upload/v1234567890/certificate.pdf"; 
+  const certificateUrl = "https://res.cloudinary.com/dyjvi61hm/image/upload/v1772002935/Your_paragraph_text_hfxvb9.png"; 
 
   return (
     <section className="bg-[#0F172A] py-24 relative overflow-hidden">
@@ -23,7 +23,7 @@ const CompanyCertificate = () => {
             Legal Transparency
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto text-lg">
-            PrestigeX is a fully registered entity. Our operations are governed by international financial standards to ensure your peace of mind.
+            Galaxy Digital is a fully registered entity. Our operations are governed by international financial standards to ensure your peace of mind.
           </p>
         </div>
 
@@ -37,8 +37,8 @@ const CompanyCertificate = () => {
             
             <div className="relative w-full max-w-[380px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl transition-all duration-700 transform group-hover:rotate-1 group-hover:scale-[1.02]">
               <img
-                src="https://res.cloudinary.com/dyjvi61hm/image/upload/v1771516436/company-cert_g6qb3g.png"
-                alt="PrestigeX Certificate of Incorporation"
+                src="https://res.cloudinary.com/dyjvi61hm/image/upload/v1772002935/Your_paragraph_text_hfxvb9.png"
+                alt="Galaxy Digital Certificate of Incorporation"
                 className="w-full h-auto object-cover"
               />
               
@@ -70,7 +70,7 @@ const CompanyCertificate = () => {
 
             <a
               href={certificateUrl}
-              download
+              download="Galaxy_Digital_Certification"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-3 bg-white hover:bg-indigo-600 text-slate-900 hover:text-white font-black px-10 py-5 rounded-2xl shadow-xl transition-all duration-300 transform active:scale-95"

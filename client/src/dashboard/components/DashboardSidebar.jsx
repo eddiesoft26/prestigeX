@@ -9,8 +9,9 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
   const navLinks = [
     { name: "Overview", path: "/dashboard", icon: HiOutlineViewGrid, end: true },
     { name: "Invest Now", path: "/dashboard/invest", icon: HiOutlineTrendingUp },
-    { name: "Real Estate", path: "/dashboard/real-estate-portal", icon: HiOutlineOfficeBuilding },
     { name: "Withdraw", path: "/dashboard/withdraw", icon: HiOutlineCreditCard },
+    { name: "Alpha Intelligence", path: "/dashboard/alpha-intelligence", icon: HiOutlineAnnotation },
+    { name: "Real Estate", path: "/dashboard/real-estate-portal", icon: HiOutlineOfficeBuilding },
     { name: "Referrals", path: "/dashboard/referrals", icon: HiOutlineUsers },
     { name: "History", path: "/dashboard/transactions", icon: HiOutlineSwitchHorizontal },
     { name: "Proof", path: "/dashboard/payment-proof", icon: HiOutlineAnnotation },

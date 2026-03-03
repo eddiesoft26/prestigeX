@@ -9,7 +9,6 @@ import About from "./pages/About";
 import Bonuses from "./pages/Bonuses";
 import Plans from "./pages/Plans";
 import FAQ from "./pages/FAQ";
-import Chatbot from "./components/Chatbot";
 import AuthPage from "./components/AuthPage";
 
 // PRIVATE ROUTES
@@ -27,6 +26,10 @@ import TermsAndConditions from "./components/TermsAndConditions";
 import HelpCenter from "./components/HelpCenter";
 import RealEstatePage from "./pages/RealEstatePage";
 import RealEstatePortal from "./dashboard/pages/RealEstatePortal";
+import FixedLanguageSelector from "./components/GalaxyLanguageSelector";
+import InvestmentOpportunities from "./pages/InvestmentOpportunities";
+import MarketAnalysis from "./pages/MarketAnalysis";
+import AlphaIntelligence from "./dashboard/pages/AlphaIntelligence";
 
 const App = () => {
   return (
@@ -47,6 +50,8 @@ const App = () => {
             <Route path="/plans" element={<Plans />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/real-estate-page" element={<RealEstatePage />} />
+            <Route path="/investment-options" element={<InvestmentOpportunities />} />
+            <Route path="/market-analysis" element={<MarketAnalysis />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/help-center" element={<HelpCenter />} />
@@ -63,17 +68,14 @@ const App = () => {
             <Route path="transactions" element={<Transactions />} />
             <Route path="payment-proof" element={<PaymentProof />} />
             <Route path="real-estate-portal" element={<RealEstatePortal />} />
+            <Route path="alpha-intelligence" element={<AlphaIntelligence />} />
           </Route>
            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Route>
         </Routes>
-
-        <Chatbot />
-        {/* <TawkMessengerReact
-          propertyId="6988e26776ad761c40db62e4"
-          widgetId="1jgvb8q5c"
-        /> */}
+        <FixedLanguageSelector />
       </div>
+
     </>
   );
 };

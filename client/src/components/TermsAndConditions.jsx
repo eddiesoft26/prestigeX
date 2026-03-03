@@ -41,7 +41,7 @@ const TermsAndConditions = () => {
                 </h2>
                 <p className="text-gray-600">
                   By creating an account on{" "}
-                  <span className="text-blue-600 font-semibold">PrestigeX</span>
+                  <span className="text-blue-600 font-semibold">GALAXY DIGITAL</span>
                   , you agree to abide by these terms. You must be of legal age
                   in your country to participate in our investment plans.
                 </p>
@@ -61,10 +61,6 @@ const TermsAndConditions = () => {
                   <li>
                     ROI (Return on Investment) is generated based on the
                     specific plan selected.
-                  </li>
-                  <li className="text-amber-700 font-medium italic">
-                    All investments carry an inherent risk; users should perform
-                    their own due diligence before committing capital.
                   </li>
                 </ul>
               </div>
@@ -121,7 +117,7 @@ const TermsAndConditions = () => {
                 <p className="text-gray-600">
                   Withdrawal requests are processed according to the timeline
                   specified in your dashboard. Ensure your wallet address is
-                  correct; PrestigeX is not responsible for funds sent to
+                  correct; GALAXY DIGITAL is not responsible for funds sent to
                   incorrectly provided addresses.
                 </p>
               </div>

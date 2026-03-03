@@ -15,7 +15,7 @@ const RealEstateTech = () => {
                         <span className="text-indigo-500 underline decoration-indigo-500/30 underline-offset-8">Physical Excellence.</span>
                     </h2>
                     <p className="text-slate-400 text-lg mb-12 font-medium">
-                        While others trade pixels, we build skylines. PrestigeX Real Estate Division has managed over 140+ premium properties, providing a physical anchor to your digital wealth.
+                        While others trade pixels, we build skylines. Galaxy Gitigal Real Estate Division has managed over 140+ premium properties, providing a physical anchor to your digital wealth.
                     </p>
                     
                     <div className="space-y-8">

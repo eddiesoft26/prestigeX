@@ -50,7 +50,7 @@ export default function AuthPage() {
             : navigate("/dashboard");
         }
       } else {
-        const res = await register({ ...formData, ...locationData });
+        const res = await register({ ...formData });
         if (res.success) {
           const userRole = res.user?.role || "USER";
           userRole === "ADMIN"
@@ -63,7 +63,7 @@ export default function AuthPage() {
         const errorMessage = error.response.data.message;
         toast.error(errorMessage);
       } else {
-        toast.error(error.response?.data?.message || "Login failed");
+        toast.error(error.response?.data?.message || "Something went wrong!");
       }
     } finally {
       setIsLoading(false);
